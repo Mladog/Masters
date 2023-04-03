@@ -1,27 +1,44 @@
 """
 Module responsible for signal analisys
 """
-# %%
+
 import neurokit2 as nk
 import numpy as np
 
-fname = "C:/Users/mlado/Desktop/Masters/data/RR_YoYo.csv"
-examination = np.genfromtxt(fname, delimiter=",")
-examination= examination.astype(int)
+def count_hrv(examination):
+    """
+    funkcja zwracająca parametry hrv w dziedzinie czasu, częstotliwości oraz nieliniowe
+    """
+    hrv_params = {"hrv_time": nk.hrv_time(examination.RR_vect, sampling_rate=1000, show=False),
+                  "hrv_nonlinear": nk.hrv_nonlinear(examination.RR_vect, sampling_rate=1000, show=False),
+                  "hrv_freq": nk.hrv_frequency({"RRI": examination.RR}, 
+                              sampling_rate=1000,
+                              psd_method='welch',
+                              show=False,
+                              normalize=True,
+                              order_criteria=None,
+                              interpolation_rate=100)}
+    return hrv_params
 
-#policzenie sumy do wyznaczenia czasu
-time = np.sum(examination) # wyrażony w ms
-peak_vect = np.zeros(int(time))
-np.put(peak_vect, examination, 1)
-# %%
+def create_hrv_summary(hrv_params):
+    hrv_time = hrv_params["hrv_time"]
+    hrv_freq = hrv_params["hrv_freq"]
+    hrv_nonlinear = hrv_params["hrv_nonlinear"]
+    text = f"""
+        HRV w dziedzinie czasu:
+        sdsd: {np.round(hrv_time.HRV_SDSD[0], 3)}
+        sdnn: {np.round(hrv_time.HRV_SDNN[0], 3)}
+        rmssd: {np.round(hrv_time.HRV_RMSSD[0], 3)}
+        cvsd: {np.round(hrv_time.HRV_CVSD[0], 3)}
 
-# Drop all columns with NaN values
-hrv_indices_clean=hrv_indices.dropna(axis=1)
-# %%
+        HRV w dziedzinie częstotliwości:
+        hf: {np.round(hrv_freq.HRV_HF[0],5)}
+        lf: {np.round(hrv_freq.HRV_LF[0],5)}
+        vlf: {np.round(hrv_freq.HRV_VLF[0],5)}
+        lf/hf: {np.round(hrv_freq.HRV_LFHF[0],5)}
 
-# %%
-hrv_indices = nk.hrv(peak_vect, sampling_rate=1000, show=True) # tak się szybciej liczy
-hrv_freq = nk.hrv_frequency({"RRI": examination}, sampling_rate=1000, 
-                            psd_method='welch', show=True, silent=False, normalize=False, order_criteria=None, interpolation_rate=100)
-
-# %%
+        HRV nieliniowe:
+        SD1: {np.round(hrv_nonlinear.HRV_SD1[0], 3)}
+        SD2: {np.round(hrv_nonlinear.HRV_SD2[0], 3)}
+        """
+    return text

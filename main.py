@@ -1,5 +1,5 @@
 """
-module responsible for App running
+Moduł odpowiedzialny za uruchomienie aplikacji
 """
 import sys
 

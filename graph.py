@@ -10,7 +10,7 @@ def create_graph(obj):
     """
     graphWidget = pg.PlotWidget()
     graphWidget.setBackground('k')
-    graphWidget.plot(obj.examination)
+    graphWidget.plot(obj.examination.RR)
 
     obj.label = pg.TextItem(text="X: {} \nY: {}".format(0, 0))
     graphWidget.addItem(obj.label)

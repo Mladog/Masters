@@ -1,15 +1,15 @@
 """
-module to create functions buttons 
+Moduł służący utworzeniu układu przycisków
 """
 from PyQt6.QtWidgets import QPushButton
 
-def create_blayout(obj):
+def create_buttons_layout(obj):
     """
-    function responsible for creating the layout
+    funkcja odpowiedzialna za rozmieszczenie przycisków
     """
-    back_btn = QPushButton(obj)
-    back_btn.setText("Cofnij")
-    obj.main_layout.addWidget(back_btn)
+    obj.back_btn = QPushButton(obj)
+    obj.back_btn.setText("Cofnij")
+    obj.main_layout.addWidget(obj.back_btn)
 
     for type_x in [obj.t1, obj.t2, obj.t3, obj.t4, obj.t5, obj.t6]:
         type_x.setChecked(True)
