@@ -21,9 +21,14 @@ class Window(QWidget):
         self.fname = ""
         self.examination = []
         self.main_layout = QVBoxLayout()
+        self.vlayout = QVBoxLayout()
         self.buttons_layout = QHBoxLayout()
-        self.art1 = QRadioButton("Typ 1", self)
-        self.art2 = QRadioButton("Typ 2", self)
+        self.t1 = QRadioButton("T1", self)
+        self.t2 = QRadioButton("T2", self)
+        self.t3 = QRadioButton("T3", self)
+        self.t4 = QRadioButton("T4", self)
+        self.t5 = QRadioButton("T5", self)
+        self.t6 = QRadioButton("T6", self)
         self.setLayout(self.main_layout)
         create_widgets(self)
 
