@@ -3,12 +3,16 @@ module containing Window definition
 """
 
 import numpy as np
+import pyqtgraph as pg
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout, QFileDialog, QWidget
+from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QWidget
+from PyQt6 import QtCore
 
-from widgets import create_widgets
+
+from artifacts import find_art1
 from examination import Examination
-from hrv import create_hrv_summary, count_hrv
+from hrv import count_hrv, create_hrv_summary
+from widgets import create_widgets
 
 
 class Window(QWidget):
@@ -87,10 +91,22 @@ class Window(QWidget):
         
         return b.text()
     
-    def check_artifact(self):
+    def choose_artifact(self):
         """
         """
         for b in [self.t1, self.t2, self.t3, self.t4, self.t5, self.t6]:
             if b.isChecked() == True:
                 self.toggle_button_selected = b.text()
         print(self.toggle_button_selected)
+
+    def auto_detect(self):
+        self.artifacts["T1"] = find_art1(self.examination.RR)
+        # przenieść to do modułu graph
+        points_T1 = pg.ScatterPlotItem(self.artifacts["T1"], 
+                                       self.examination.RR[self.artifacts["T1"]],
+                                       brush=pg.mkBrush(219, 0, 0, 120), hoverable=True)
+        #points_T1.addLegend('artefakt 1')
+        self.graphWidget.addItem(points_T1)
+
+        self.legend.addItem(points_T1, 'artefakt1')
+        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))

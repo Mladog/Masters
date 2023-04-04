@@ -10,7 +10,7 @@ def create_RR_layout(obj):
     funkcja odpowiedzialna za rozmieszczenie przycisków
     """
     # utworzenie wykresu
-    obj.graphWidget = create_graph(obj)
+    create_graph(obj)
     obj.RR_layout.addWidget(obj.graphWidget)
 
     # zainicjowanie słownika artefaktów

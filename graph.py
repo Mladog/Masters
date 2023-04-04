@@ -3,19 +3,23 @@ Module in which the plot is defined
 """
 
 import pyqtgraph as pg
+from PyQt6 import QtCore
 
 def create_graph(obj):
     """
     function to create graph as a widget
     """
-    graphWidget = pg.PlotWidget()
-    graphWidget.setBackground('k')
-    graphWidget.plot(obj.examination.RR)
-
+    obj.graphWidget = pg.PlotWidget()
+    obj.graphWidget.setBackground('gray')
+    obj.graphWidget.setGeometry(QtCore.QRect(0, 0, 785, 580))
+    RR_plot = obj.graphWidget.plot(obj.examination.RR)
     obj.label = pg.TextItem(text="X: {} \nY: {}".format(0, 0))
-    graphWidget.addItem(obj.label)
+    obj.graphWidget.addItem(obj.label)
 
-    graphWidget.scene().sigMouseMoved.connect(obj.mouse_moved)
-    graphWidget.scene().sigMouseClicked.connect(obj.mouse_clicked)
+    obj.legend = pg.LegendItem()
+    obj.legend.setParentItem(RR_plot)
+    
+    obj.graphWidget.scene().sigMouseMoved.connect(obj.mouse_moved)
+    obj.graphWidget.scene().sigMouseClicked.connect(obj.mouse_clicked)
 
-    return graphWidget
+    
