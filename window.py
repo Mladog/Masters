@@ -62,7 +62,7 @@ class Window(QWidget):
         vb = self.graphWidget.plotItem.vb
         if self.graphWidget.sceneBoundingRect().contains(evt):
             mouse_point = vb.mapSceneToView(evt)
-            self.label.setHtml(f"<p style='color:white'>X： {mouse_point.x()} <br> Y: {mouse_point.y()}</p>")
+            self.label.setHtml(f"<p style='color:white'>X: {mouse_point.x()} <br> Y: {mouse_point.y()}</p>")
 
     def mouse_clicked(self, evt):
         """
@@ -82,15 +82,15 @@ class Window(QWidget):
         """
         funckja zwracająca stan przycisku 
         """
+        if b.isChecked == True:
+            print(b.text() + "is selected")
         
-        if b.text() == "Button1":
+        return b.text()
+    
+    def check_artifact(self):
+        """
+        """
+        for b in [self.t1, self.t2, self.t3, self.t4, self.t5, self.t6]:
             if b.isChecked() == True:
-                print(b.text()+" is selected")
-            else:
-                print(b.text()+" is deselected")
-                
-        if b.text() == "Button2":
-            if b.isChecked() == True:
-                print(b.text()+" is selected")
-            else:
-                print(b.text()+" is deselected")
+                self.toggle_button_selected = b.text()
+        print(self.toggle_button_selected)
