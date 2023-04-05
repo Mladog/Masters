@@ -10,14 +10,16 @@ def create_graph(obj):
     function to create graph as a widget
     """
     obj.graphWidget = pg.PlotWidget()
+    
     obj.graphWidget.setBackground('gray')
     obj.graphWidget.setGeometry(QtCore.QRect(0, 0, 785, 580))
-    RR_plot = obj.graphWidget.plot(obj.examination.RR)
+    obj.RR_plot = obj.graphWidget.plot(obj.examination.RR)
+    obj.RR_plot.clear()
     obj.label = pg.TextItem(text="X: {} \nY: {}".format(0, 0))
     obj.graphWidget.addItem(obj.label)
 
     obj.legend = pg.LegendItem()
-    obj.legend.setParentItem(RR_plot)
+    obj.legend.setParentItem(obj.RR_plot)
     
     obj.graphWidget.scene().sigMouseMoved.connect(obj.mouse_moved)
     obj.graphWidget.scene().sigMouseClicked.connect(obj.mouse_clicked)

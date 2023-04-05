@@ -24,6 +24,7 @@ def create_widgets(obj) -> None:
     obj.main_layout.addWidget(obj.file_btn)
     obj.file_btn.clicked.connect(obj.open_dialog)
     # dodanie układu RR
+    create_RR_layout(obj)
     obj.main_layout.addLayout(obj.RR_layout)
 
     # dodanie układu przycisków
@@ -36,5 +37,4 @@ def create_widgets(obj) -> None:
     obj.t5 = QRadioButton("T5", obj)
     obj.t6 = QRadioButton("T6", obj)
     # utworzenie układów
-    create_RR_layout(obj)
     create_buttons_layout(obj)

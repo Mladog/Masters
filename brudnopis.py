@@ -19,7 +19,9 @@ def find_art1(RR):
     idx = np.where(np.array(final_list) == 2)[0]
 
     return idx
-
+    
+def find_art2(RR):
+    return idx
 # %%
 ex = Examination("C:/Users/mlado/Desktop/Masters/data/RR_YoYo.csv")
 hrv = count_hrv(ex)

@@ -41,6 +41,8 @@ class Window(QWidget):
         self.RR_layout = QHBoxLayout()
         # ustawienie głównego układu
         self.setLayout(self.main_layout)
+        # zmienna przechowująca aktywne elementy wykresu
+        self.active_plot_items = []
         # stworzenie początkowych widgetów
         create_widgets(self)
 
@@ -56,8 +58,12 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        self.graphWidget.plot(self.examination.RR)
+        self.p2_plot.clear()
+        self.p2_plot = pg.PlotCurveItem(self.examination.RR, pen='b')
+        self.p2.addItem(self.p2_plot)
         self.update_hrv_params()
+        
+        self.p3.clear()
 
     def mouse_moved(self, evt):
         """
