@@ -58,12 +58,14 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        self.p2_plot.clear()
+        self.p2.clear()
+        self.p1.setXRange(-100, len(self.examination.RR)+150, padding=0)
+        self.p1.setYRange(-100, max(self.examination.RR)+150, padding=0)
         self.p2_plot = pg.PlotCurveItem(self.examination.RR, pen='b')
         self.p2.addItem(self.p2_plot)
         self.update_hrv_params()
         
-        self.p3.clear()
+        #self.p3.clear()
 
     def mouse_moved(self, evt):
         """
