@@ -17,7 +17,7 @@ def create_new_graph(obj):
     obj.p1 = obj.graphWidget.plotItem
     obj.p1.setYRange(-100, 1000, padding=0)
     obj.p1.setXRange(-100, 30000, padding=0)
-    obj.p1.setLabels(left='RR [ms]', bottom = 'czas [ms]')
+    obj.p1.setLabels(left='RR [ms]', bottom = 'nr kolejnego interwału')
 
     # inicjalizacja drugiego wykresu wyświetlajacego artefakty
     obj.p2 = pg.ViewBox()
@@ -36,7 +36,7 @@ def create_new_graph(obj):
 
     # dodanie legendy do wykresu
     obj.legend = pg.LegendItem()
-    obj.legend.setParentItem(obj.p1)
+    obj.graphWidget.addItem(obj.legend)
     
     # dodanie etykiety wyświetlającej współrzędne 
     obj.label = pg.TextItem(text="X: {} \nY: {}".format(0, 0))
@@ -56,7 +56,8 @@ def create_new_graph(obj):
 
 def add_point_to_graph(obj):
     obj.plot_cursor.clear()
-    obj.cursor_coords = pg.ScatterPlotItem([obj.coords_x], 
-                                       [obj.examination.RR[obj.coords_x]],
-                                       brush=pg.mkBrush(255, 0, 0, 120), hoverable=True)
+    obj.cursor_coords = pg.ScatterPlotItem([obj.coords_x], [obj.examination.RR[obj.coords_x]],
+                                       brush=pg.mkBrush(0, 255, 0, 120),
+                                       size = 12,
+                                       hoverable=True)
     obj.plot_cursor.addItem(obj.cursor_coords)

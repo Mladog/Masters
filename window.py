@@ -62,7 +62,7 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        for p in [self.p2, self.p3, self.plot_cursor]:
+        for p in [self.p2, self.p3, self.plot_cursor, self.legend]:
             p.clear()
         
         self.p1.setXRange(-100, len(self.examination.RR)+150, padding=0)
@@ -120,12 +120,11 @@ class Window(QWidget):
     def auto_detect(self):
         self.artifacts["T1"] = find_art1(self.examination.RR)
         # przenieść to do modułu graph
-        points_T1 = pg.ScatterPlotItem(self.artifacts["T1"], 
+        self.points_T1 = pg.ScatterPlotItem(self.artifacts["T1"], 
                                        self.examination.RR[self.artifacts["T1"]],
-                                       brush=pg.mkBrush(219, 0, 0, 120), hoverable=True)
-        #points_T1.addLegend('artefakt 1')
+                                       brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
         self.p3.clear()
-        self.p3.addItem(points_T1)
+        self.p3.addItem(self.points_T1)
 
-        self.legend.addItem(points_T1, 'artefakt1')
+        self.legend.addItem(self.points_T1, 'artefakt 1')
         self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))
