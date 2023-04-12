@@ -3,7 +3,6 @@ Moduł służący utworzeniu układu wykresu oraz parametrów RR
 """
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QLabel
-from graph import create_graph
 from new_graph import create_new_graph
 
 def create_RR_layout(obj):

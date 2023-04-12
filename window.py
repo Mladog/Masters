@@ -13,6 +13,7 @@ from artifacts import find_art1
 from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
+from new_graph import add_point_to_graph
 
 
 class Window(QWidget):
@@ -41,8 +42,11 @@ class Window(QWidget):
         self.RR_layout = QHBoxLayout()
         # ustawienie głównego układu
         self.setLayout(self.main_layout)
-        # zmienna przechowująca aktywne elementy wykresu
+        # zmienna przechowująca aktywne elementy wykresu //chyba nie jest dłużej potrzebne
         self.active_plot_items = []
+        # zmienne przechowująca współrzędne pierwszego punktu do oznaczenia
+        self.coords_x = None
+        self.coords_y = None
         # stworzenie początkowych widgetów
         create_widgets(self)
 
@@ -58,14 +62,14 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        self.p2.clear()
+        for p in [self.p2, self.p3, self.plot_cursor]:
+            p.clear()
+        
         self.p1.setXRange(-100, len(self.examination.RR)+150, padding=0)
         self.p1.setYRange(-100, max(self.examination.RR)+150, padding=0)
         self.p2_plot = pg.PlotCurveItem(self.examination.RR, pen='b')
         self.p2.addItem(self.p2_plot)
         self.update_hrv_params()
-        
-        #self.p3.clear()
 
     def mouse_moved(self, evt):
         """
@@ -85,6 +89,12 @@ class Window(QWidget):
         if self.graphWidget.sceneBoundingRect().contains(scene_coords):
             mouse_point = vb.mapSceneToView(scene_coords)
             print(f'clicked plot X: {mouse_point.x()}, Y: {mouse_point.y()}, event: {evt}')
+            diff_y = np.abs(self.examination.RR - mouse_point.y())
+            diff_x = np.abs(np.array(range(len(self.examination.RR))) - mouse_point.x())
+            idx = (np.abs(diff_x + diff_y)).argmin()
+            self.coords_x = idx
+            print(self.coords_x, self.examination.RR[idx])
+            add_point_to_graph(self)
 
     def update_hrv_params(self):
         new_params = create_hrv_summary(count_hrv(self.examination))
@@ -114,7 +124,8 @@ class Window(QWidget):
                                        self.examination.RR[self.artifacts["T1"]],
                                        brush=pg.mkBrush(219, 0, 0, 120), hoverable=True)
         #points_T1.addLegend('artefakt 1')
-        self.graphWidget.addItem(points_T1)
+        self.p3.clear()
+        self.p3.addItem(points_T1)
 
         self.legend.addItem(points_T1, 'artefakt1')
         self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))
