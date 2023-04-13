@@ -13,14 +13,6 @@ def create_RR_layout(obj):
     create_new_graph(obj)
     obj.RR_layout.addWidget(obj.graphWidget)
 
-    # zainicjowanie słownika artefaktów
-    obj.artifacts = {"T1_auto": [],
-                     "T2_auto": [],
-                     "T3_auto": [],
-                     "T1_manual": [],
-                     "T2_manual": [],
-                     "T3_manual": []}
-
     # etykieta zawierająca informacje o sygnale
     obj.hrv_label = QLabel("oczekiwanie na wczytanie \nsygnału")
     obj.hrv_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

@@ -115,43 +115,43 @@ class Window(QWidget):
         for b in [self.t1, self.t2, self.t3]:
             if b.isChecked() == True:
                 self.toggle_button_selected = b.text()
-        self.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
+        self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
         self.plot_artifacts()
 
     def del_artifact(self):
         """ 
         funkcja usuwająca zaznaczony nadmiarowo epizod
         """
-        for el in self.artifacts.keys():
-            if self.coords_x in self.artifacts[el]:
-                self.artifacts[el].remove(self.coords_x)
+        for el in self.examination.artifacts.keys():
+            if self.coords_x in self.examination.artifacts[el]:
+                self.examination.artifacts[el].remove(self.coords_x)
         self.plot_artifacts()
 
     def auto_detect(self):
-        self.artifacts["T1_auto"] = find_art1(self)
-        self.artifacts["T2_auto"] = find_art2(self)
-        self.artifacts["T3_auto"] = find_art3(self)
+        self.examination.artifacts["T1_auto"] = find_art1(self)
+        self.examination.artifacts["T2_auto"] = find_art2(self)
+        self.examination.artifacts["T3_auto"] = find_art3(self)
         self.plot_artifacts()
         
     def plot_artifacts(self):
-        self.points_T1_auto = pg.ScatterPlotItem(self.artifacts["T1_auto"], 
-                                       self.examination.RR[self.artifacts["T1_auto"]],
+        self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T1_auto"]],
                                        brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
-        self.points_T2_auto = pg.ScatterPlotItem(self.artifacts["T2_auto"], 
-                                       self.examination.RR[self.artifacts["T2_auto"]],
+        self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["T2_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T2_auto"]],
                                        brush=pg.mkBrush(0, 255, 0, 120), hoverable=True)
-        self.points_T3_auto = pg.ScatterPlotItem(self.artifacts["T3_auto"], 
-                                       self.examination.RR[self.artifacts["T3_auto"]],
+        self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T3_auto"]],
                                        brush=pg.mkBrush(0, 0, 255, 120), hoverable=True)
 
-        self.points_T1_manual = pg.ScatterPlotItem(self.artifacts["T1_manual"], 
-                                       self.examination.RR[self.artifacts["T1_manual"]],
+        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T1_manual"]],
                                        brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
-        self.points_T2_manual = pg.ScatterPlotItem(self.artifacts["T2_manual"], 
-                                       self.examination.RR[self.artifacts["T2_manual"]],
+        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["T2_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T2_manual"]],
                                        brush=pg.mkBrush(67, 94, 82, 255), hoverable=True)
-        self.points_T3_manual = pg.ScatterPlotItem(self.artifacts["T3_manual"], 
-                                       self.examination.RR[self.artifacts["T3_manual"]],
+        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["T3_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T3_manual"]],
                                        brush=pg.mkBrush(82, 67, 94, 255), hoverable=True)
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,

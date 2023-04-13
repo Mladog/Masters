@@ -11,9 +11,23 @@ class Examination():
             self.RR = []
             self.RR_vect = []
             self.duration = 0
+            # zainicjowanie słownika artefaktów
+            self.artifacts = {"T1_auto": [],
+                            "T2_auto": [],
+                            "T3_auto": [],
+                            "T1_manual": [],
+                            "T2_manual": [],
+                            "T3_manual": []}
         else:
             self.RR = np.genfromtxt(self.path, delimiter=",").astype(int)
             self.RR_vect = self.get_RR_vect()
+            # zainicjowanie słownika artefaktów
+            self.artifacts = {"T1_auto": [],
+                              "T2_auto": [],
+                              "T3_auto": [],
+                              "T1_manual": [],
+                              "T2_manual": [],
+                              "T3_manual": []}
         
     
     def get_RR_vect(self):
