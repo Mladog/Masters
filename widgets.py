@@ -3,10 +3,12 @@ moduł odpowiedzialny za utworzenie widgetów
 """
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QLabel, QPushButton, QRadioButton
+from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QLineEdit,
+                             QPushButton, QRadioButton)
 
-from RR_layout import create_RR_layout
 from buttons_layout import create_buttons_layout
+from RR_layout import create_RR_layout
+
 
 def create_widgets(obj) -> None:
     """
@@ -17,29 +19,60 @@ def create_widgets(obj) -> None:
     # oraz dodanie jej do głównego układu
     obj.label = QLabel("Aplikacja do wyłapywania artefaktów")
     obj.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    obj.main_layout.addWidget(obj.label)
+    obj.first_row.addWidget(obj.label)
+    obj.main_layout.addLayout(obj.first_row)
 
     # utworzenie przycisku odpowiedzialnego za możliwość 
     # wczytania nowego pliku
     obj.file_btn = QPushButton(obj)
+    obj.file_btn.resize(100, 50)
     obj.file_btn.setText("Wczytaj plik")
-    obj.main_layout.addWidget(obj.file_btn)
+    obj.first_row.addWidget(obj.file_btn)
     obj.file_btn.clicked.connect(obj.open_dialog)
 
+    # utworzenie opcji do wpisania ręcznego
+    obj.textbox_layout = QHBoxLayout()
+    obj.label_art1 = QLabel("T1: Rozbieżność w jednym przedziale [ms]")
+    obj.label_art2 = QLabel("T2: Długi interwał po krótkim [ms]")
+    obj.label_art3 = QLabel("T3: Krótki interwał po długim [ms]")
+    obj.textbox_art1 = QLineEdit(obj)
+    obj.textbox_art1.setText("200")
+    obj.textbox_art2 = QLineEdit(obj)
+    obj.textbox_art2.setText("400")
+    obj.textbox_art3 = QLineEdit(obj)
+    obj.textbox_art3.setText("400")
+    for el in [obj.label_art1, obj.textbox_art1,
+               obj.label_art2, obj.textbox_art2,
+               obj.label_art3, obj.textbox_art3]:
+        obj.textbox_layout.addWidget(el)
+    
+    obj.main_layout.addLayout(obj.textbox_layout)
+
+    obj.auto_art = QPushButton(obj)
+    obj.auto_art.setText("Wyznacz artefakty automatycznie")
+    obj.auto_art.clicked.connect(lambda:obj.auto_detect())
+    obj.main_layout.addWidget(obj.auto_art)
     # dodanie układu RR
     create_RR_layout(obj)
     obj.main_layout.addLayout(obj.RR_layout)
 
     # dodanie układu przycisków
-    obj.main_layout.addLayout(obj.buttons_layout)
+    obj.main_layout.addLayout(obj.r_buttons_layout)
+    obj.main_layout.addLayout(obj.c_buttons_layout)
     
     # utworzenie przycisków radiowych do oznaczenia typu artefaktu
     obj.t1 = QRadioButton("T1", obj)
     obj.t2 = QRadioButton("T2", obj)
     obj.t3 = QRadioButton("T3", obj)
-    obj.t4 = QRadioButton("T4", obj)
-    obj.t5 = QRadioButton("T5", obj)
-    obj.t6 = QRadioButton("T6", obj)
+
+    # utworzenie przycisków do usuwania grup artefaktów
+    obj.t1_auto = QCheckBox("Auto T1")
+    obj.t2_auto = QCheckBox("Auto T2")
+    obj.t3_auto = QCheckBox("Auto T3")
+    obj.t1_man = QCheckBox("Manual T1")
+    obj.t2_man = QCheckBox("Manual T2")
+    obj.t3_man = QCheckBox("Manual T3")
+    obj.current = QCheckBox("Obecne zaznaczenie")
     
     # utworzenie układów
     create_buttons_layout(obj)

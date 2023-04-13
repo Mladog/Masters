@@ -8,8 +8,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt6 import QtCore
 
-
-from artifacts import find_art1
+from artifacts import find_art1, find_art2, find_art3
 from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
@@ -34,10 +33,13 @@ class Window(QWidget):
         self.examination = Examination()
         # główny układ aplikacji
         self.main_layout = QVBoxLayout()
-        # układ wertykalny
+        # układ wertykalny 
         self.vlayout = QVBoxLayout()
+        # układ początkowej linii
+        self.first_row = QHBoxLayout()
         # układ przycisków
-        self.buttons_layout = QHBoxLayout()
+        self.r_buttons_layout = QHBoxLayout()
+        self.c_buttons_layout = QHBoxLayout()
         # układ wykresu i parametrów
         self.RR_layout = QHBoxLayout()
         # ustawienie głównego układu
@@ -100,31 +102,68 @@ class Window(QWidget):
         new_params = create_hrv_summary(count_hrv(self.examination))
         self.hrv_label.setText(new_params)
 
-    def btnstate(self, b):
-        """
-        funckja zwracająca stan przycisku 
-        """
+    """def btnstate(self, b):
         if b.isChecked == True:
             print(b.text() + "is selected")
         
-        return b.text()
+        return b.text()"""
     
     def choose_artifact(self):
         """
+        funkcja oznaczająca nowy artefakt
         """
-        for b in [self.t1, self.t2, self.t3, self.t4, self.t5, self.t6]:
+        for b in [self.t1, self.t2, self.t3]:
             if b.isChecked() == True:
                 self.toggle_button_selected = b.text()
-        print(self.toggle_button_selected)
+        self.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
+        self.plot_artifacts()
+
+    def del_artifact(self):
+        """ 
+        funkcja usuwająca zaznaczony nadmiarowo epizod
+        """
+        for el in self.artifacts.keys():
+            if self.coords_x in self.artifacts[el]:
+                self.artifacts[el].remove(self.coords_x)
+        self.plot_artifacts()
 
     def auto_detect(self):
-        self.artifacts["T1"] = find_art1(self.examination.RR)
-        # przenieść to do modułu graph
-        self.points_T1 = pg.ScatterPlotItem(self.artifacts["T1"], 
-                                       self.examination.RR[self.artifacts["T1"]],
+        self.artifacts["T1_auto"] = find_art1(self)
+        self.artifacts["T2_auto"] = find_art2(self)
+        self.artifacts["T3_auto"] = find_art3(self)
+        self.plot_artifacts()
+        
+    def plot_artifacts(self):
+        self.points_T1_auto = pg.ScatterPlotItem(self.artifacts["T1_auto"], 
+                                       self.examination.RR[self.artifacts["T1_auto"]],
                                        brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
-        self.p3.clear()
-        self.p3.addItem(self.points_T1)
+        self.points_T2_auto = pg.ScatterPlotItem(self.artifacts["T2_auto"], 
+                                       self.examination.RR[self.artifacts["T2_auto"]],
+                                       brush=pg.mkBrush(0, 255, 0, 120), hoverable=True)
+        self.points_T3_auto = pg.ScatterPlotItem(self.artifacts["T3_auto"], 
+                                       self.examination.RR[self.artifacts["T3_auto"]],
+                                       brush=pg.mkBrush(0, 0, 255, 120), hoverable=True)
 
-        self.legend.addItem(self.points_T1, 'artefakt 1')
+        self.points_T1_manual = pg.ScatterPlotItem(self.artifacts["T1_manual"], 
+                                       self.examination.RR[self.artifacts["T1_manual"]],
+                                       brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
+        self.points_T2_manual = pg.ScatterPlotItem(self.artifacts["T2_manual"], 
+                                       self.examination.RR[self.artifacts["T2_manual"]],
+                                       brush=pg.mkBrush(67, 94, 82, 255), hoverable=True)
+        self.points_T3_manual = pg.ScatterPlotItem(self.artifacts["T3_manual"], 
+                                       self.examination.RR[self.artifacts["T3_manual"]],
+                                       brush=pg.mkBrush(82, 67, 94, 255), hoverable=True)
+        self.p3.clear()
+        for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
+                   self.points_T1_manual, self.points_T2_manual, self.points_T3_manual]:
+            self.p3.addItem(el)
+
+        # ustawienia legendy 
+        self.legend.clear()
+        self.legend.addItem(self.points_T1_auto, 'auto T1')
+        self.legend.addItem(self.points_T2_auto, 'auto T2')
+        self.legend.addItem(self.points_T3_auto, 'auto T3')
+        self.legend.addItem(self.points_T1_manual, 'manual T1')
+        self.legend.addItem(self.points_T2_manual, 'manual T2')
+        self.legend.addItem(self.points_T3_manual, 'manual T3')
         self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))
