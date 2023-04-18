@@ -64,13 +64,13 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        for p in [self.p2, self.p3, self.plot_cursor, self.legend]:
+        for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
             p.clear()
         
-        self.p1.setXRange(-100, len(self.examination.RR)+150, padding=0)
-        self.p1.setYRange(-100, max(self.examination.RR)+150, padding=0)
-        self.p2_plot = pg.PlotCurveItem(self.examination.RR, pen='b')
-        self.p2.addItem(self.p2_plot)
+        self.plot_label.setXRange(-100, len(self.examination.RR)+150, padding=0)
+        self.plot_label.setYRange(-100, max(self.examination.RR)+150, padding=0)
+        self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
+        self.plot_art.addItem(self.RRs)
         self.update_hrv_params()
 
     def mouse_moved(self, evt):
@@ -90,24 +90,16 @@ class Window(QWidget):
         scene_coords = evt.scenePos()
         if self.graphWidget.sceneBoundingRect().contains(scene_coords):
             mouse_point = vb.mapSceneToView(scene_coords)
-            print(f'clicked plot X: {mouse_point.x()}, Y: {mouse_point.y()}, event: {evt}')
             diff_y = np.abs(self.examination.RR - mouse_point.y())
             diff_x = np.abs(np.array(range(len(self.examination.RR))) - mouse_point.x())
             idx = (np.abs(diff_x + diff_y)).argmin()
             self.coords_x = idx
-            print(self.coords_x, self.examination.RR[idx])
             add_point_to_graph(self)
 
     def update_hrv_params(self):
         new_params = create_hrv_summary(count_hrv(self.examination))
         self.hrv_label.setText(new_params)
-
-    """def btnstate(self, b):
-        if b.isChecked == True:
-            print(b.text() + "is selected")
-        
-        return b.text()"""
-    
+   
     def choose_artifact(self):
         """
         funkcja oznaczająca nowy artefakt

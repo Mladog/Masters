@@ -19,7 +19,7 @@ class Examination():
                             "T2_manual": [],
                             "T3_manual": []}
         else:
-            self.RR = np.genfromtxt(self.path, delimiter=",").astype(int)
+            self.RR = self.get_RR_intervals()
             self.RR_vect = self.get_RR_vect()
             # zainicjowanie słownika artefaktów
             self.artifacts = {"T1_auto": [],
@@ -29,7 +29,19 @@ class Examination():
                               "T2_manual": [],
                               "T3_manual": []}
         
-    
+    def get_RR_intervals(self):
+        with open(self.path) as f:
+            lines = f.readlines()
+        # usunięcie headera
+        lines = lines[3:]
+        # usunięcie pustych wierszy
+        lines_tmp = []
+        [lines_tmp.append(x.replace("\n", "")) for x in lines]
+        lines_tmp.remove("")
+        # konwersja do np.array z elementami typu int
+        list_int = np.array([int(x) for x in lines_tmp])
+        return list_int
+
     def get_RR_vect(self):
         """
         Funkcja odpowiedzialna za utworzenie wektora zer i jedynek,

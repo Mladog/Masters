@@ -14,13 +14,13 @@ def create_new_graph(obj):
     # tytuł okna
     obj.graphWidget.setWindowTitle('Zarejestrowany sygnal')
     # inicjalizacja pierwszego wykresu z zakresem oraz opisami osi
-    obj.p1 = obj.graphWidget.plotItem
-    obj.p1.setYRange(-100, 1000, padding=0)
-    obj.p1.setXRange(-100, 30000, padding=0)
-    obj.p1.setLabels(left='RR [ms]', bottom = 'nr kolejnego interwału')
+    obj.plot_label = obj.graphWidget.plotItem
+    obj.plot_label.setYRange(-100, 1000, padding=0)
+    obj.plot_label.setXRange(-100, 30000, padding=0)
+    obj.plot_label.setLabels(left='RR [ms]', bottom = 'nr kolejnego interwału')
 
     # inicjalizacja drugiego wykresu wyświetlajacego artefakty
-    obj.p2 = pg.ViewBox()
+    obj.plot_art = pg.ViewBox()
 
     # inicjalizacja go wykresu wyświetlajacego ...
     obj.p3 = pg.ViewBox()
@@ -29,10 +29,10 @@ def create_new_graph(obj):
     obj.plot_cursor = pg.ViewBox()
     
     # dodanie widoków do wykresu oraz połączenie ich osi
-    for p in [obj.p2, obj.p3, obj.plot_cursor]:
-        obj.p1.scene().addItem(p)
-        p.setXLink(obj.p1)
-        p.setYLink(obj.p1)
+    for p in [obj.plot_art, obj.p3, obj.plot_cursor]:
+        obj.plot_label.scene().addItem(p)
+        p.setXLink(obj.plot_label)
+        p.setYLink(obj.plot_label)
 
     # dodanie legendy do wykresu
     obj.legend = pg.LegendItem()
@@ -47,12 +47,12 @@ def create_new_graph(obj):
     # zmiana widoku po aktualizacji wykresu
     def updateViews():
         # dopasowanie wszystkich wykresów do widoku wykresu 1
-        for p in [obj.p2, obj.p3, obj.plot_cursor]:
-            p.setGeometry(obj.p1.vb.sceneBoundingRect())
-            p.linkedViewChanged(obj.p1.vb, p.XAxis)
+        for p in [obj.plot_art, obj.p3, obj.plot_cursor]:
+            p.setGeometry(obj.plot_label.vb.sceneBoundingRect())
+            p.linkedViewChanged(obj.plot_label.vb, p.XAxis)
 
     updateViews()
-    obj.p1.vb.sigResized.connect(updateViews)
+    obj.plot_label.vb.sigResized.connect(updateViews)
 
 def add_point_to_graph(obj):
     obj.plot_cursor.clear()

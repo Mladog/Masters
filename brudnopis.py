@@ -30,6 +30,16 @@ idx = find_art1(ex.RR)
 plt.plot(ex.RR)
 plt.plot(idx, ex.RR[idx], 'ro')
 
+# %%
+with open('C:/Users/mlado/Desktop/Masters/data/RRy z Yo-Yo/21102002_Bienias Dominik.txt') as f:
+    lines = f.readlines()
 
+# usunięcie headera
+lines = lines[3:]
 
+lines_tmp = []
+[lines_tmp.append(x.replace("\n", "")) for x in lines]
+
+lines_tmp.remove('')
+lines_int = np.array([int(x) for x in lines_tmp])
 # %%
