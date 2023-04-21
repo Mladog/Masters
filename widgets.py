@@ -66,12 +66,12 @@ def create_widgets(obj) -> None:
     obj.t3 = QRadioButton("T3", obj)
 
     # utworzenie przycisków do usuwania grup artefaktów
-    obj.t1_auto = QCheckBox("Auto T1")
-    obj.t2_auto = QCheckBox("Auto T2")
-    obj.t3_auto = QCheckBox("Auto T3")
-    obj.t1_man = QCheckBox("Manual T1")
-    obj.t2_man = QCheckBox("Manual T2")
-    obj.t3_man = QCheckBox("Manual T3")
+    obj.t1_auto = QCheckBox("T1_auto")
+    obj.t2_auto = QCheckBox("T2_auto")
+    obj.t3_auto = QCheckBox("T3_auto")
+    obj.t1_man = QCheckBox("T1_manual")
+    obj.t2_man = QCheckBox("T2_manual")
+    obj.t3_man = QCheckBox("T3_manual")
     obj.current = QCheckBox("Obecne zaznaczenie")
     
     # utworzenie układów
