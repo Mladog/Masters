@@ -4,6 +4,7 @@ Moduł odpowiedziany za automatyczne wyznaczanie oraz usuwanie artefaktów
 import numpy as np
 from scipy import interpolate
 import scipy as sp
+import pandas as pd
 
 def find_art1(obj):
     """
@@ -67,36 +68,25 @@ def remove_artifacts(obj):
     for atype in atypes:
         idx = np.append(idx, obj.examination.artifacts[atype])
 
-    print(idx)
-    #idx = np.unique(idx).astype(int)
-    # podmienienie wartości wybranych typów artefkatów na np.nan
-    values = np.empty(0); inds = np.empty(0); to_del = np.empty(0)
-    if len(idx) > 0:
-        RR_copy = obj.examination.RR.astype("float")
-        for i in idx:
-            RR_copy[i] = np.nan
+    RR_copy = [float(R) for R in obj.examination.RR]
+    for i in idx:
+        RR_copy[i] = np.nan
 
-        
-        
-        inds = np.arange(RR_copy.shape[0])
-        values = np.where(np.isfinite(RR_copy))
+    while np.isnan(RR_copy[0]):
+        RR_copy = RR_copy[1:]
+    
+    while np.isnan(RR_copy[-1]):
+        RR_copy = RR_copy[:-2]
 
-        if method == "lin":
-            f = interpolate.interp1d(inds[values], RR_copy[values], bounds_error=False)
-            RR_temp = np.where(~np.isfinite(RR_copy), RR_copy, f(inds))
-            print("RR_temp\n :")
-            print(RR_temp)
-            obj.examination.RR = np.array([int(x) for x in RR_temp])
+    if method == 'lin':
+        pds = pd.Series(RR_copy).interpolate('linear')
+        while pds.isna().sum() > 0:
+            pds = pds.interpolate('linear')
+    elif method == 'cub':
+        pds = pd.Series(RR_copy).interpolate('cubicspline')
+    elif method == 'del':
+        pds = pd.Series(RR_copy).interpolate('linear')
 
-        elif method == "cub":
-            f = sp.interpolate.CubicSpline(inds[values], RR_copy[values])
-            RR_temp = np.where(np.isfinite(RR_copy), RR_copy, f(inds))
-            obj.examination.RR = np.array([int(x) for x in RR_temp])
+    obj.examination.RR = np.array([int(element) for element in pds])
 
-        elif method == "del":
-            RR_temp = np.delete(RR_copy, np.where(~np.isfinite(RR_copy)))
-            to_del = np.where(~np.isfinite(RR_copy))
-            obj.examination.RR = np.array([int(x) for x in RR_temp])
 
-        print(obj.examination.RR)
-    return to_del

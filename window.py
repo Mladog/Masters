@@ -125,8 +125,8 @@ class Window(QWidget):
         self.chosen_artifacts = [chbx.text() for chbx in self.checkbox_list if chbx.isChecked()]
         if len(self.chosen_artifacts) > 0:
             to_del = remove_artifacts(self)
-            self.examination.get_RR_vect()
-            self.del_artifact(to_del)
+            #self.examination.get_RR_vect()
+            #self.del_artifact(to_del)
             self.update_plot()
 
     def update_plot(self):
