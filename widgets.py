@@ -73,6 +73,9 @@ def create_widgets(obj) -> None:
     obj.t2_man = QCheckBox("Manual T2")
     obj.t3_man = QCheckBox("Manual T3")
     obj.current = QCheckBox("Obecne zaznaczenie")
+    obj.checkbox_list = [obj.t1_auto, obj.t2_auto, obj.t3_auto,
+                         obj.t1_man, obj.t2_man, obj.t3_man,
+                         obj.current]
     
     # utworzenie układów
     create_buttons_layout(obj)

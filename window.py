@@ -8,7 +8,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt6 import QtCore
 
-from artifacts import find_art1, find_art2, find_art3
+from artifacts import find_art1, find_art2, find_art3, remove_artifacts
 from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
@@ -46,6 +46,8 @@ class Window(QWidget):
         self.setLayout(self.main_layout)
         # zmienna przechowująca aktywne elementy wykresu //chyba nie jest dłużej potrzebne
         self.active_plot_items = []
+        self.chosen_artifacts = []
+        self.method = "lin"
         # zmienne przechowująca współrzędne pierwszego punktu do oznaczenia
         self.coords_x = None
         self.coords_y = None
@@ -64,14 +66,7 @@ class Window(QWidget):
             "examination.xls",
         )
         self.examination = Examination(self.fname)
-        for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
-            p.clear()
-        
-        self.plot_label.setXRange(-100, len(self.examination.RR)+150, padding=0)
-        self.plot_label.setYRange(-100, max(self.examination.RR)+150, padding=0)
-        self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
-        self.plot_art.addItem(self.RRs)
-        self.update_hrv_params()
+        self.update_plot()
 
     def mouse_moved(self, evt):
         """
@@ -107,43 +102,62 @@ class Window(QWidget):
         for b in [self.t1, self.t2, self.t3]:
             if b.isChecked() == True:
                 self.toggle_button_selected = b.text()
-        self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
+        self.examination.artifacts["Manual " + self.toggle_button_selected].append(self.coords_x)
         self.plot_artifacts()
 
-    def del_artifact(self):
+    def del_artifact(self, points_to_del):
         """ 
-        funkcja usuwająca zaznaczony nadmiarowo epizod
+        funkcja usuwająca wybrane artefakty
         """
         for el in self.examination.artifacts.keys():
-            if self.coords_x in self.examination.artifacts[el]:
-                self.examination.artifacts[el].remove(self.coords_x)
+            for point in points_to_del:
+                if point in self.examination.artifacts[el]:
+                    self.examination.artifacts[el].remove(point)
         self.plot_artifacts()
 
     def auto_detect(self):
-        self.examination.artifacts["T1_auto"] = find_art1(self)
-        self.examination.artifacts["T2_auto"] = find_art2(self)
-        self.examination.artifacts["T3_auto"] = find_art3(self)
+        self.examination.artifacts["Auto T1"] = find_art1(self)
+        self.examination.artifacts["Auto T2"] = find_art2(self)
+        self.examination.artifacts["Auto T3"] = find_art3(self)
         self.plot_artifacts()
+
+    def delete_chosen_artifacts(self):
+        self.chosen_artifacts = [chbx.text() for chbx in self.checkbox_list if chbx.isChecked()]
+        if len(self.chosen_artifacts) > 0:
+            to_del = remove_artifacts(self)
+            self.examination.get_RR_vect()
+            self.del_artifact(to_del)
+            self.update_plot()
+
+    def update_plot(self):
+        for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
+            p.clear()
+        
+        self.plot_label.setXRange(-100, len(self.examination.RR)+150, padding=0)
+        self.plot_label.setYRange(-100, max(self.examination.RR)+150, padding=0)
+        self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
+        self.plot_art.addItem(self.RRs)
+        self.update_hrv_params()
         
     def plot_artifacts(self):
-        self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
-                                       self.examination.RR[self.examination.artifacts["T1_auto"]],
+        self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T1"], 
+                                       self.examination.RR[self.examination.artifacts["Auto T1"]],
                                        brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
-        self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["T2_auto"], 
-                                       self.examination.RR[self.examination.artifacts["T2_auto"]],
+        self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T2"], 
+                                       self.examination.RR[self.examination.artifacts["Auto T2"]],
                                        brush=pg.mkBrush(0, 255, 0, 120), hoverable=True)
-        self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
-                                       self.examination.RR[self.examination.artifacts["T3_auto"]],
+        self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T3"], 
+                                       self.examination.RR[self.examination.artifacts["Auto T3"]],
                                        brush=pg.mkBrush(0, 0, 255, 120), hoverable=True)
 
-        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T1_manual"]],
+        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T1"], 
+                                       self.examination.RR[self.examination.artifacts["Manual T1"]],
                                        brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
-        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["T2_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T2_manual"]],
+        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T2"], 
+                                       self.examination.RR[self.examination.artifacts["Manual T2"]],
                                        brush=pg.mkBrush(67, 94, 82, 255), hoverable=True)
-        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["T3_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T3_manual"]],
+        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T3"], 
+                                       self.examination.RR[self.examination.artifacts["Manual T3"]],
                                        brush=pg.mkBrush(82, 67, 94, 255), hoverable=True)
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
