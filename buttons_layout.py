@@ -29,5 +29,10 @@ def create_buttons_layout(obj):
     
     obj.del_btn = QPushButton(obj)
     obj.del_btn.setText("Usuń artefakt")
-    obj.del_btn.clicked.connect(lambda:obj.del_artifact())
+    obj.del_btn.clicked.connect(lambda:obj.del_artifact([obj.coords_x]))
     obj.r_buttons_layout.addWidget(obj.del_btn)    
+
+    obj.del_btn2 = QPushButton(obj)
+    obj.del_btn2.setText("Usuń wybrane")
+    obj.del_btn2.clicked.connect(lambda:obj.delete_chosen_artifacts())
+    obj.c_buttons_layout.addWidget(obj.del_btn2)    
