@@ -110,10 +110,14 @@ class Window(QWidget):
         funkcja usuwająca wybrane artefakty
         """
         for el in self.examination.artifacts.keys():
-            for point in points_to_del:
-                if point in self.examination.artifacts[el]:
+            if len(points_to_del) > 0:
+                if len(points_to_del) == 1:
                     self.examination.artifacts[el].remove(point)
-        self.plot_artifacts()
+                else:
+                    for point in points_to_del:
+                        if point in self.examination.artifacts[el]:
+                            self.examination.artifacts[el].remove(point)
+        #self.plot_artifacts()
 
     def auto_detect(self):
         self.examination.artifacts["Auto T1"] = find_art1(self)
@@ -124,10 +128,12 @@ class Window(QWidget):
     def delete_chosen_artifacts(self):
         self.chosen_artifacts = [chbx.text() for chbx in self.checkbox_list if chbx.isChecked()]
         if len(self.chosen_artifacts) > 0:
-            to_del = remove_artifacts(self)
+            to_del, _ = remove_artifacts(self)
             #self.examination.get_RR_vect()
-            #self.del_artifact(to_del)
+            print(to_del)
+            self.del_artifact(to_del)
             self.update_plot()
+            self.plot_artifacts()
 
     def update_plot(self):
         for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:

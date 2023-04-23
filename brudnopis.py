@@ -1,3 +1,4 @@
+# %%
 """
 Module responsible for signal analisys
 """
@@ -93,8 +94,6 @@ RR_copy = ex.RR.astype("float")
 for i in idx:
     RR_copy[i] = np.nan
 
-
-
 new_RR_lin, d_l = fill_nan(RR_copy, "lin")
 ex.RR = np.array([int(x) for x in new_RR_lin])
 ex.get_RR_intervals()
@@ -104,3 +103,5 @@ new_RR_del, d = fill_nan(RR_copy, "del")
 plt.plot(ex.RR)
 
 
+
+# %%
