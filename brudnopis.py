@@ -102,6 +102,8 @@ new_RR_del, d = fill_nan(RR_copy, "del")
 
 plt.plot(ex.RR)
 
+ex.save_to_txt()
+
 
 
 # %%

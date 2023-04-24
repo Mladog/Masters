@@ -1,22 +1,32 @@
 """
 Moduł służący utworzeniu układu przycisków
 """
-from PyQt6.QtWidgets import QPushButton
+from PyQt6.QtWidgets import QPushButton, QButtonGroup
 
 def create_buttons_layout(obj):
     """
     funkcja odpowiedzialna za rozmieszczenie przycisków
     """
-    obj.back_btn = QPushButton(obj)
-    obj.back_btn.setText("Cofnij")
-    obj.main_layout.addWidget(obj.back_btn)
+    obj.save_btn = QPushButton(obj)
+    obj.save_btn.setText("Zapisz")
+    obj.save_btn.clicked.connect(lambda:obj.save_data())
+    obj.main_layout.addWidget(obj.save_btn)
 
-    for t in [obj.t1, obj.t2, obj.t3]:
-        #t.toggled.connect(lambda:obj.btnstate(t))
+    
+    obj.artifacts_group = QButtonGroup(obj)
+    for i, t in enumerate([obj.t1, obj.t2, obj.t3]):
+        obj.artifacts_group.addButton(t)
         obj.r_buttons_layout.addWidget(t)
+
+    obj.methods_group = QButtonGroup(obj)
+    for i, m in enumerate([obj.m1, obj.m2, obj.m3]):
+        obj.methods_group.addButton(m)
+        obj.m_buttons_layout.addWidget(m)
 
     obj.t1.setChecked(True)
     obj.toggle_button_selected = "T1"
+
+    obj.m1.setChecked(True)
 
     for t in [obj.t1_auto, obj.t2_auto, obj.t3_auto,
               obj.t1_man, obj.t2_man, obj.t3_man, obj.current]:
@@ -35,4 +45,7 @@ def create_buttons_layout(obj):
     obj.del_btn2 = QPushButton(obj)
     obj.del_btn2.setText("Usuń wybrane")
     obj.del_btn2.clicked.connect(lambda:obj.delete_chosen_artifacts())
-    obj.c_buttons_layout.addWidget(obj.del_btn2)    
+    obj.c_buttons_layout.addWidget(obj.del_btn2)
+
+
+    obj.m_buttons_layout

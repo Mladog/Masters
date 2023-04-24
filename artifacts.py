@@ -62,8 +62,10 @@ def remove_artifacts(obj):
     funkcja zmieniająca wybrane artefakty
     '''
     atypes = obj.chosen_artifacts
-    method = obj.method
-
+    for m in [obj.m1, obj.m2, obj.m3]:
+            if m.isChecked() == True:
+                method = m.text()
+    
     idx = np.array(0)
     for atype in atypes:
         idx = np.append(idx, obj.examination.artifacts[atype])
@@ -83,15 +85,15 @@ def remove_artifacts(obj):
                 obj.examination.artifacts[key].remove(val)
 
     deleted = np.empty(0)
-    if method == "lin":
+    if method == "interpolacja liniowa":
         f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
         RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
 
-    elif method == "cub":
+    elif method == "splajn kubiczny":
         f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])
         RR_interpolated = np.where(np.isfinite(RR_with_nan),RR_with_nan,f(inds))
     
-    elif method == "del":
+    elif method == "usunięcie":
         RR_interpolated = np.delete(RR_with_nan, np.where(~np.isfinite(RR_with_nan)))
         deleted = np.where(~np.isfinite(RR_with_nan))
         for val in inds[nan_values]:

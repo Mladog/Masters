@@ -4,7 +4,7 @@ moduł odpowiedzialny za utworzenie widgetów
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QLineEdit,
-                             QPushButton, QRadioButton)
+                             QPushButton, QRadioButton, QButtonGroup)
 
 from buttons_layout import create_buttons_layout
 from RR_layout import create_RR_layout
@@ -59,11 +59,17 @@ def create_widgets(obj) -> None:
     # dodanie układu przycisków
     obj.main_layout.addLayout(obj.r_buttons_layout)
     obj.main_layout.addLayout(obj.c_buttons_layout)
+    obj.main_layout.addLayout(obj.m_buttons_layout)
     
     # utworzenie przycisków radiowych do oznaczenia typu artefaktu
     obj.t1 = QRadioButton("T1", obj)
     obj.t2 = QRadioButton("T2", obj)
     obj.t3 = QRadioButton("T3", obj)
+
+    # utworzenie przycisków radiowych do wyboru metody usunięcia artefaktów
+    obj.m1 = QRadioButton("interpolacja liniowa", obj)
+    obj.m2 = QRadioButton("splajn kubiczny", obj)
+    obj.m3 = QRadioButton("usunięcie", obj)
 
     # utworzenie przycisków do usuwania grup artefaktów
     obj.t1_auto = QCheckBox("T1_auto")

@@ -13,7 +13,7 @@ from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
 from new_graph import add_point_to_graph
-
+from view_manager import initialize_views
 
 class Window(QWidget):
     """
@@ -31,19 +31,7 @@ class Window(QWidget):
         self.fname = ""
         # badanie
         self.examination = Examination()
-        # główny układ aplikacji
-        self.main_layout = QVBoxLayout()
-        # układ wertykalny 
-        self.vlayout = QVBoxLayout()
-        # układ początkowej linii
-        self.first_row = QHBoxLayout()
-        # układ przycisków
-        self.r_buttons_layout = QHBoxLayout()
-        self.c_buttons_layout = QHBoxLayout()
-        # układ wykresu i parametrów
-        self.RR_layout = QHBoxLayout()
-        # ustawienie głównego układu
-        self.setLayout(self.main_layout)
+        initialize_views(self)
         # zmienna przechowująca aktywne elementy wykresu //chyba nie jest dłużej potrzebne
         self.active_plot_items = []
         self.chosen_artifacts = []
@@ -102,7 +90,7 @@ class Window(QWidget):
         for b in [self.t1, self.t2, self.t3]:
             if b.isChecked() == True:
                 self.toggle_button_selected = b.text()
-        self.examination.artifacts["Manual " + self.toggle_button_selected].append(self.coords_x)
+        self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
         self.plot_artifacts()
 
     def del_artifact(self, points_to_del):
@@ -117,12 +105,24 @@ class Window(QWidget):
                     for point in points_to_del:
                         if point in self.examination.artifacts[el]:
                             self.examination.artifacts[el].remove(point)
-        #self.plot_artifacts()
+
+    def save_data(self):
+        """
+        funkcja odpowiedzialna za zapis danych
+        """
+        dialog = QFileDialog()
+        dialog.setNameFilter(".csv") #to nie działa
+        fname, _ = dialog.getSaveFileName(
+            self,
+            "Open File",
+            f"{self.examination.path[:-4]}_clean.txt",
+        )
+        self.examination.save_to_txt(fname)
 
     def auto_detect(self):
-        self.examination.artifacts["Auto T1"] = find_art1(self)
-        self.examination.artifacts["Auto T2"] = find_art2(self)
-        self.examination.artifacts["Auto T3"] = find_art3(self)
+        self.examination.artifacts["T1_auto"] = find_art1(self)
+        self.examination.artifacts["T2_auto"] = find_art2(self)
+        self.examination.artifacts["T3_auto"] = find_art3(self)
         self.plot_artifacts()
 
     def delete_chosen_artifacts(self):
@@ -134,6 +134,7 @@ class Window(QWidget):
             self.del_artifact(to_del)
             self.update_plot()
             self.plot_artifacts()
+            self.update_hrv_params()
 
     def update_plot(self):
         for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
@@ -146,24 +147,24 @@ class Window(QWidget):
         self.update_hrv_params()
         
     def plot_artifacts(self):
-        self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T1"], 
-                                       self.examination.RR[self.examination.artifacts["Auto T1"]],
+        self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T1_auto"]],
                                        brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
-        self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T2"], 
-                                       self.examination.RR[self.examination.artifacts["Auto T2"]],
+        self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["T2_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T2_auto"]],
                                        brush=pg.mkBrush(0, 255, 0, 120), hoverable=True)
-        self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["Auto T3"], 
-                                       self.examination.RR[self.examination.artifacts["Auto T3"]],
+        self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
+                                       self.examination.RR[self.examination.artifacts["T3_auto"]],
                                        brush=pg.mkBrush(0, 0, 255, 120), hoverable=True)
 
-        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T1"], 
-                                       self.examination.RR[self.examination.artifacts["Manual T1"]],
+        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T1_manual"]],
                                        brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
-        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T2"], 
-                                       self.examination.RR[self.examination.artifacts["Manual T2"]],
+        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["T2_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T2_manual"]],
                                        brush=pg.mkBrush(67, 94, 82, 255), hoverable=True)
-        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["Manual T3"], 
-                                       self.examination.RR[self.examination.artifacts["Manual T3"]],
+        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["T3_manual"], 
+                                       self.examination.RR[self.examination.artifacts["T3_manual"]],
                                        brush=pg.mkBrush(82, 67, 94, 255), hoverable=True)
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
