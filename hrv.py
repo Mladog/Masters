@@ -2,22 +2,17 @@
 Module responsible for signal analisys
 """
 
-import neurokit2 as nk
 import numpy as np
+from hrvanalysis import get_time_domain_features, get_poincare_plot_features, get_frequency_domain_features
 
 def count_hrv(examination):
     """
     funkcja zwracająca parametry hrv w dziedzinie czasu, częstotliwości oraz nieliniowe
     """
-    hrv_params = {"hrv_time": nk.hrv_time(examination.RR_vect, sampling_rate=1000, show=False),
-                  "hrv_nonlinear": nk.hrv_nonlinear(examination.RR_vect, sampling_rate=1000, show=False),
-                  "hrv_freq": nk.hrv_frequency({"RRI": examination.RR}, 
-                              sampling_rate=1000,
-                              psd_method='welch',
-                              show=False,
-                              normalize=True,
-                              order_criteria=None,
-                              interpolation_rate=100)}
+    hrv_params = {"hrv_time": get_time_domain_features(examination.RR, False),
+                  "hrv_nonlinear": get_poincare_plot_features(examination.RR),
+                  "hrv_freq": get_frequency_domain_features(examination.RR, method="lomb")
+                }
     return hrv_params
 
 def create_hrv_summary(hrv_params):
@@ -26,19 +21,21 @@ def create_hrv_summary(hrv_params):
     hrv_nonlinear = hrv_params["hrv_nonlinear"]
     text = f"""
         HRV w dziedzinie czasu:
-        sdsd: {np.round(hrv_time.HRV_SDSD[0], 3)}
-        sdnn: {np.round(hrv_time.HRV_SDNN[0], 3)}
-        rmssd: {np.round(hrv_time.HRV_RMSSD[0], 3)}
-        cvsd: {np.round(hrv_time.HRV_CVSD[0], 3)}
+        mean_nni: {np.round(hrv_time['mean_nni'], 3)}
+        sdsd: {np.round(hrv_time['sdsd'], 3)}
+        sdnn: {np.round(hrv_time['sdnn'], 3)}
+        rmssd: {np.round(hrv_time['rmssd'], 3)}
+        cvsd: {np.round(hrv_time['cvsd'], 3)}
 
         HRV w dziedzinie częstotliwości:
-        hf: {np.round(hrv_freq.HRV_HF[0],5)}
-        lf: {np.round(hrv_freq.HRV_LF[0],5)}
-        vlf: {np.round(hrv_freq.HRV_VLF[0],5)}
-        lf/hf: {np.round(hrv_freq.HRV_LFHF[0],5)}
+        hf: {np.round(hrv_freq['hf'],5)}
+        lf: {np.round(hrv_freq['lf'],5)}
+        vlf: {np.round(hrv_freq['vlf'],5)}
+        lf/hf: {np.round(hrv_freq['lf_hf_ratio'],5)}
+        total power: {np.round(hrv_freq['total_power'],5)}
 
         HRV nieliniowe:
-        SD1: {np.round(hrv_nonlinear.HRV_SD1[0], 3)}
-        SD2: {np.round(hrv_nonlinear.HRV_SD2[0], 3)}
+        SD1: {np.round(hrv_nonlinear['sd1'], 3)}
+        SD2: {np.round(hrv_nonlinear['sd2'], 3)}
         """
     return text

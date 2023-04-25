@@ -87,7 +87,7 @@ class Window(QWidget):
         funkcja oznaczająca nowy artefakt
         """
         if self.coords_x:
-            for b in [self.t1, self.t2, self.t3]:
+            for b in [self.t1, self.t2, self.t3, self.diff]:
                 if b.isChecked() == True:
                     self.toggle_button_selected = b.text()
             self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
@@ -147,26 +147,31 @@ class Window(QWidget):
     def plot_artifacts(self):
         self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
                                        self.examination.RR[self.examination.artifacts["T1_auto"]],
-                                       brush=pg.mkBrush(255, 214, 77, 120), hoverable=True)
+                                       brush=pg.mkBrush(255, 255, 0, 255), hoverable=True)
         self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["T2_auto"], 
                                        self.examination.RR[self.examination.artifacts["T2_auto"]],
-                                       brush=pg.mkBrush(0, 255, 0, 120), hoverable=True)
+                                       brush=pg.mkBrush(0, 255, 0, 255), hoverable=True)
         self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
                                        self.examination.RR[self.examination.artifacts["T3_auto"]],
-                                       brush=pg.mkBrush(0, 0, 255, 120), hoverable=True)
+                                       brush=pg.mkBrush(0, 0, 255, 255), hoverable=True)
 
         self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
                                        self.examination.RR[self.examination.artifacts["T1_manual"]],
                                        brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
         self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["T2_manual"], 
                                        self.examination.RR[self.examination.artifacts["T2_manual"]],
-                                       brush=pg.mkBrush(67, 94, 82, 255), hoverable=True)
+                                       brush=pg.mkBrush(0, 255, 255, 255), hoverable=True)
         self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["T3_manual"], 
                                        self.examination.RR[self.examination.artifacts["T3_manual"]],
-                                       brush=pg.mkBrush(82, 67, 94, 255), hoverable=True)
+                                       brush=pg.mkBrush(102, 0, 204, 255), hoverable=True)
+
+        self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["inne_manual"], 
+                                       self.examination.RR[self.examination.artifacts["inne_manual"]],
+                                       brush=pg.mkBrush(153, 0, 76, 255), hoverable=True)
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
-                   self.points_T1_manual, self.points_T2_manual, self.points_T3_manual]:
+                   self.points_T1_manual, self.points_T2_manual, self.points_T3_manual,
+                   self.points_diff]:
             self.p3.addItem(el)
 
         # ustawienia legendy 
@@ -177,4 +182,5 @@ class Window(QWidget):
         self.legend.addItem(self.points_T1_manual, 'manual T1')
         self.legend.addItem(self.points_T2_manual, 'manual T2')
         self.legend.addItem(self.points_T3_manual, 'manual T3')
+        self.legend.addItem(self.points_diff, 'inne')
         self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))

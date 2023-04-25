@@ -14,7 +14,7 @@ def create_buttons_layout(obj):
 
     
     obj.artifacts_group = QButtonGroup(obj)
-    for i, t in enumerate([obj.t1, obj.t2, obj.t3]):
+    for i, t in enumerate([obj.t1, obj.t2, obj.t3, obj.diff]):
         obj.artifacts_group.addButton(t)
         obj.r_buttons_layout.addWidget(t)
 
@@ -29,7 +29,7 @@ def create_buttons_layout(obj):
     obj.m1.setChecked(True)
 
     for t in [obj.t1_auto, obj.t2_auto, obj.t3_auto,
-              obj.t1_man, obj.t2_man, obj.t3_man, obj.current]:
+              obj.t1_man, obj.t2_man, obj.t3_man, obj.diff_man]:
         obj.c_buttons_layout.addWidget(t)
 
     obj.art_btn = QPushButton(obj)
