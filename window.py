@@ -47,14 +47,13 @@ class Window(QWidget):
         funkcja odpowiedzialna za wybór pliku z okna dialogowego
         """
         dialog = QFileDialog()
-        dialog.setNameFilter(".csv") #to nie działa
         self.fname, _ = dialog.getOpenFileName(
             self,
             "Open File",
-            "examination.xls",
         )
-        self.examination = Examination(self.fname)
-        self.update_plot()
+        if self.fname:
+            self.examination = Examination(self.fname)
+            self.update_plot()
 
     def mouse_moved(self, evt):
         """
@@ -87,24 +86,24 @@ class Window(QWidget):
         """
         funkcja oznaczająca nowy artefakt
         """
-        for b in [self.t1, self.t2, self.t3]:
-            if b.isChecked() == True:
-                self.toggle_button_selected = b.text()
-        self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
-        self.plot_artifacts()
+        if self.coords_x:
+            for b in [self.t1, self.t2, self.t3]:
+                if b.isChecked() == True:
+                    self.toggle_button_selected = b.text()
+            self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
+            self.plot_artifacts()
 
     def del_artifact(self, points_to_del):
         """ 
         funkcja usuwająca wybrane artefakty
         """
-        for el in self.examination.artifacts.keys():
+        for key in self.examination.artifacts.keys():
             if len(points_to_del) > 0:
-                if len(points_to_del) == 1:
-                    self.examination.artifacts[el].remove(point)
-                else:
-                    for point in points_to_del:
-                        if point in self.examination.artifacts[el]:
-                            self.examination.artifacts[el].remove(point)
+                for point in points_to_del:
+                    if point in self.examination.artifacts[key]:
+                        self.examination.artifacts[key].remove(point)
+        
+        self.plot_artifacts()
 
     def save_data(self):
         """
@@ -128,12 +127,11 @@ class Window(QWidget):
     def delete_chosen_artifacts(self):
         self.chosen_artifacts = [chbx.text() for chbx in self.checkbox_list if chbx.isChecked()]
         if len(self.chosen_artifacts) > 0:
-            to_del, _ = remove_artifacts(self)
+            to_del = remove_artifacts(self)
             #self.examination.get_RR_vect()
-            print(to_del)
-            self.del_artifact(to_del)
             self.update_plot()
-            self.plot_artifacts()
+            self.del_artifact(to_del)
+            #self.plot_artifacts()
             self.update_hrv_params()
 
     def update_plot(self):
