@@ -99,7 +99,7 @@ def remove_artifacts(obj):
             deleted = np.where(~np.isfinite(RR_with_nan))
             for val in inds[nan_values]:
                 for key in obj.examination.artifacts.keys():
-                    obj.examination.artifacts[key] = [x - 1 for x in obj.examination.artifacts[key] if x >=vals ]
+                    obj.examination.artifacts[key] = [x - 1 if x >= val else x for x in obj.examination.artifacts[key]]
 
         while np.isnan(RR_interpolated[0]):
             RR_interpolated = RR_interpolated[1:]
@@ -114,7 +114,6 @@ def remove_artifacts(obj):
                     obj.examination.artifacts[key].remove(len(RR_interpolated))
 
         obj.examination.RR = np.array([int(element) for element in RR_interpolated])
-        #to_del = [el for el in deleted]
         return deleted
     else:
         return np.array([])

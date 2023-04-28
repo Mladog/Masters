@@ -4,12 +4,15 @@ Module responsible for signal analisys
 
 import numpy as np
 from hrvanalysis import get_time_domain_features, get_poincare_plot_features, get_frequency_domain_features
+from statsmodels.tsa.stattools import adfuller
 
 def count_hrv(examination):
     """
     funkcja zwracająca parametry hrv w dziedzinie czasu, częstotliwości oraz nieliniowe
     """
-    hrv_params = {"hrv_time": get_time_domain_features(examination.RR, False),
+    print(adfuller(examination.RR)[1])
+    hrv_params = {"stationarity": False if adfuller(examination.RR)[1] > 0.05 else True,
+                  "hrv_time": get_time_domain_features(examination.RR, False),
                   "hrv_nonlinear": get_poincare_plot_features(examination.RR),
                   "hrv_freq": get_frequency_domain_features(examination.RR, method="lomb")
                 }
