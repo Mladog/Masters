@@ -4,17 +4,16 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 
 """
 TODO:
-1) doczytać o warunkach zaliczenia artefaktu do zbioru 2/3
+1) doczytać o warunkach zaliczenia artefaktu do zbioru 2/3 (też na potem)
 2) przyczepić legendę inaczej (na potem)
 3) test stacjonarności HRV
-4) parametry HRV do pliku
-5) opcja zaznaczenia pierwszego i ostatniego bitu, który ma być brany pod uwagę w analizie hrv
+4) opcja zaznaczenia pierwszego i ostatniego bitu, który ma być brany pod uwagę w analizie hrv
     i) możliwość wpisania nr próbki
     ii) możliwość kliknięcia próbki
-6) uzupełnienie HRV o te, które chce Kuba
-7) porównanie wszystkich param. z PyBiosem
-8) opcja białego wykresu dla Marcela
-9) crush testy
+5) uzupełnienie HRV o te, które chce Kuba (czekam na maila)
+6) porównanie wszystkich param. z PyBiosem
+7) opcja białego wykresu dla Marcela 
+8) crush testy
 """
 
 

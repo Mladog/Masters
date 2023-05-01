@@ -110,7 +110,6 @@ class Window(QWidget):
         funkcja odpowiedzialna za zapis danych
         """
         dialog = QFileDialog()
-        dialog.setNameFilter(".csv") #to nie działa
         fname, _ = dialog.getSaveFileName(
             self,
             "Open File",
@@ -121,6 +120,8 @@ class Window(QWidget):
             f.write("ilość usuniętych artefaktów \n")
             for key in self.examination.corrected_artifacts.keys():
                 f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
+            f.write("\npoliczone parametry hrv:\n")
+            f.write(self.hrv_label.text())
 
     def auto_detect(self):
         self.examination.artifacts["T1_auto"] = find_art1(self)
