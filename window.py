@@ -117,6 +117,10 @@ class Window(QWidget):
             f"{self.examination.path[:-4]}_clean.txt",
         )
         self.examination.save_to_txt(fname)
+        with open(f'{fname[:-4]}_stats.txt', 'w') as f:
+            f.write("ilość usuniętych artefaktów \n")
+            for key in self.examination.corrected_artifacts.keys():
+                f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
 
     def auto_detect(self):
         self.examination.artifacts["T1_auto"] = find_art1(self)

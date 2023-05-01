@@ -68,6 +68,7 @@ def remove_artifacts(obj):
     
     idx = np.array([])
     for atype in atypes:
+        obj.examination.corrected_artifacts[atype]  += len(obj.examination.artifacts[atype])
         idx = np.append(idx, obj.examination.artifacts[atype])
 
     if len(idx) > 0:

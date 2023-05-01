@@ -20,6 +20,14 @@ class Examination():
                             "T2_manual": [],
                             "T3_manual": [],
                             "inne_manual": []}
+
+            self.corrected_artifacts = {"T1_auto": 0,
+                            "T2_auto": 0,
+                            "T3_auto": 0,
+                            "T1_manual": 0,
+                            "T2_manual": 0,
+                            "T3_manual": 0,
+                            "inne_manual": 0}
         else:
             self.RR = self.get_RR_intervals()
             self.RR_vect = self.get_RR_vect()
@@ -31,6 +39,14 @@ class Examination():
                             "T2_manual": [],
                             "T3_manual": [],
                             "inne_manual": []}
+
+            self.corrected_artifacts = {"T1_auto": 0,
+                            "T2_auto": 0,
+                            "T3_auto": 0,
+                            "T1_manual": 0,
+                            "T2_manual": 0,
+                            "T3_manual": 0,
+                            "inne_manual": 0}
         
     def get_RR_intervals(self):
         with open(self.path) as f:
