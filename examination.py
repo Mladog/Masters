@@ -53,7 +53,6 @@ class Examination():
         w którym "1" oznacza miejsce wystąpienia załamka R. 
         """
         self.duration = np.sum(self.RR) # czas wyrażony w milisekundach
-        print(sum(self.RR))
         peak_vect = np.zeros(int(self.duration))
         np.put(peak_vect, self.RR, 1)
         return peak_vect

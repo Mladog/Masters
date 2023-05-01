@@ -62,7 +62,7 @@ def remove_artifacts(obj):
     funkcja zmieniająca wybrane artefakty
     '''
     atypes = obj.chosen_artifacts
-    for m in [obj.m1, obj.m2, obj.m3]:
+    for m in [obj.m1, obj.m2, obj.m3, obj.m4]:
             if m.isChecked() == True:
                 method = m.text()
     
@@ -100,7 +100,15 @@ def remove_artifacts(obj):
             for val in inds[nan_values]:
                 for key in obj.examination.artifacts.keys():
                     obj.examination.artifacts[key] = [x - 1 if x >= val else x for x in obj.examination.artifacts[key]]
-
+        
+        elif method == "średnia krocząca":
+            RR_interpolated = RR_with_nan
+            for val in inds[nan_values]:
+                if val >= 3 and val <= len(RR_interpolated)-3:
+                    neighborhood = RR_interpolated[val-3:val+3]
+                    neighborhood = neighborhood[~np.isnan(neighborhood)]
+                    RR_interpolated[val] = np.mean(neighborhood)
+            
         while np.isnan(RR_interpolated[0]):
             RR_interpolated = RR_interpolated[1:]
             # jesli usunieto 1. element - zaktualizować indeksy

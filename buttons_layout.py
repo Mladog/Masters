@@ -11,7 +11,6 @@ def create_buttons_layout(obj):
     obj.save_btn.setText("Zapisz")
     obj.save_btn.clicked.connect(lambda:obj.save_data())
     obj.main_layout.addWidget(obj.save_btn)
-
     
     obj.artifacts_group = QButtonGroup(obj)
     for i, t in enumerate([obj.t1, obj.t2, obj.t3, obj.diff]):
@@ -19,7 +18,7 @@ def create_buttons_layout(obj):
         obj.r_buttons_layout.addWidget(t)
 
     obj.methods_group = QButtonGroup(obj)
-    for i, m in enumerate([obj.m1, obj.m2, obj.m3]):
+    for i, m in enumerate([obj.m1, obj.m2, obj.m3, obj.m4]):
         obj.methods_group.addButton(m)
         obj.m_buttons_layout.addWidget(m)
 
@@ -33,7 +32,7 @@ def create_buttons_layout(obj):
         obj.c_buttons_layout.addWidget(t)
 
     obj.art_btn = QPushButton(obj)
-    obj.art_btn.setText("Oznacz artefakt")
+    obj.art_btn.setText("Oznacz manualnie")
     obj.art_btn.clicked.connect(lambda:obj.choose_artifact())
     obj.r_buttons_layout.addWidget(obj.art_btn)       
     
@@ -43,9 +42,7 @@ def create_buttons_layout(obj):
     obj.r_buttons_layout.addWidget(obj.del_btn)    
 
     obj.del_btn2 = QPushButton(obj)
-    obj.del_btn2.setText("Usuń wybrane")
+    obj.del_btn2.setText("Skoryguj wybrane")
     obj.del_btn2.clicked.connect(lambda:obj.delete_chosen_artifacts())
     obj.c_buttons_layout.addWidget(obj.del_btn2)
 
-
-    obj.m_buttons_layout

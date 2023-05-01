@@ -71,6 +71,7 @@ def create_widgets(obj) -> None:
     obj.m1 = QRadioButton("interpolacja liniowa", obj)
     obj.m2 = QRadioButton("splajn kubiczny", obj)
     obj.m3 = QRadioButton("usunięcie", obj)
+    obj.m4 = QRadioButton("średnia krocząca", obj)
 
     # utworzenie przycisków do usuwania grup artefaktów
     obj.t1_auto = QCheckBox("T1_auto")

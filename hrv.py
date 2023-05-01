@@ -10,7 +10,7 @@ def count_hrv(examination):
     """
     funkcja zwracająca parametry hrv w dziedzinie czasu, częstotliwości oraz nieliniowe
     """
-    print(adfuller(examination.RR)[1])
+    #print(adfuller(examination.RR)[1])
     hrv_params = {"stationarity": False if adfuller(examination.RR)[1] > 0.05 else True,
                   "hrv_time": get_time_domain_features(examination.RR, False),
                   "hrv_nonlinear": get_poincare_plot_features(examination.RR),
