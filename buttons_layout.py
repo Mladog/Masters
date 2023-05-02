@@ -23,7 +23,7 @@ def create_buttons_layout(obj):
         obj.m_buttons_layout.addWidget(m)
 
     obj.t1.setChecked(True)
-    obj.toggle_button_selected = "T1"
+    #obj.toggle_button_selected = "T1"
 
     obj.m1.setChecked(True)
 

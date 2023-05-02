@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QLineEdit,
 
 from buttons_layout import create_buttons_layout
 from RR_layout import create_RR_layout
+from hrv_options import initialize_hrv_options
 
 
 def create_widgets(obj) -> None:
@@ -52,6 +53,12 @@ def create_widgets(obj) -> None:
     obj.auto_art.setText("Wyznacz artefakty automatycznie")
     obj.auto_art.clicked.connect(lambda:obj.auto_detect())
     obj.main_layout.addWidget(obj.auto_art)
+
+    # dodanie układu hrv
+    obj.main_layout.addLayout(obj.hrv_options_layout_1)
+    obj.main_layout.addLayout(obj.hrv_options_layout_2)
+    initialize_hrv_options(obj)
+
     # dodanie układu RR
     create_RR_layout(obj)
     obj.main_layout.addLayout(obj.RR_layout)

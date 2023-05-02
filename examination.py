@@ -73,11 +73,18 @@ class Examination():
         np.put(peak_vect, self.RR, 1)
         return peak_vect
 
-    def save_to_txt(self, path=None):
+    def save_to_txt(self, path=None, range=None):
         if path == None:
             path = f"{self.path[:-4]}_noartifacts.txt"
-        with open(f"{path}", "w") as txt_file:
-            for el in self.header:
-                txt_file.write(f"{el}")
-            for el in self.RR:
-                txt_file.write(f"{el}" + "\n")
+        if range == None:
+            with open(f"{path}", "w") as txt_file:
+                for el in self.header:
+                    txt_file.write(f"{el}")
+                for el in self.RR:
+                    txt_file.write(f"{el}" + "\n")
+        else:
+            with open(f"{path}", "w") as txt_file:
+                for el in self.header:
+                    txt_file.write(f"{el}")
+                for el in self.RR[range[0]:range[1]]:
+                    txt_file.write(f"{el}" + "\n")

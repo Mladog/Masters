@@ -8,14 +8,12 @@ TODO:
 2) przyczepić legendę inaczej (na potem)
 3) test stacjonarności HRV
 4) opcja zaznaczenia pierwszego i ostatniego bitu, który ma być brany pod uwagę w analizie hrv
-    i) możliwość wpisania nr próbki
-    ii) możliwość kliknięcia próbki
+    i) możliwość wpisania nr próbki (zaznaczenie pionową linią)
+    ii) możliwość kliknięcia próbki (na potem)
 5) uzupełnienie HRV o te, które chce Kuba (czekam na maila)
 6) porównanie wszystkich param. z PyBiosem
-7) opcja białego wykresu dla Marcela 
-8) crush testy
+7) crush testy
 """
-
 
 import sys
 

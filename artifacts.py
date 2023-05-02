@@ -110,12 +110,14 @@ def remove_artifacts(obj):
                     neighborhood = neighborhood[~np.isnan(neighborhood)]
                     RR_interpolated[val] = np.mean(neighborhood)
             
+        # pętla usuwająca wartości NAN z początku badania - te wartości nie mogły zostać zinterpolowane
         while np.isnan(RR_interpolated[0]):
             RR_interpolated = RR_interpolated[1:]
             # jesli usunieto 1. element - zaktualizować indeksy
             for key in obj.examination.artifacts.keys():
                 obj.examination.artifacts[key] = [x - 1 for x in obj.examination.artifacts[key]]
         
+        # pętla usuwająca wartości NAN z końca badania
         while np.isnan(RR_interpolated[-1]):
             RR_interpolated = RR_interpolated[:-1]
             for key in obj.examination.artifacts.keys():

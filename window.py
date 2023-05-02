@@ -54,6 +54,8 @@ class Window(QWidget):
         if self.fname:
             self.examination = Examination(self.fname)
             self.update_plot()
+            self.textbox_end.setText(f"{str(len(self.examination.RR)-1)}")
+            self.textbox_start.setText("0")
 
     def mouse_moved(self, evt):
         """
@@ -79,7 +81,7 @@ class Window(QWidget):
             add_point_to_graph(self)
 
     def update_hrv_params(self):
-        new_params = create_hrv_summary(count_hrv(self.examination))
+        new_params = create_hrv_summary(count_hrv(self))
         self.hrv_label.setText(new_params)
    
     def choose_artifact(self):
@@ -110,12 +112,16 @@ class Window(QWidget):
         funkcja odpowiedzialna za zapis danych
         """
         dialog = QFileDialog()
+        file_name = f"{self.examination.path[:-4]}_clean.txt" if self.h1.isChecked() == True else f"{self.examination.path[:-4]}_short_clean.txt"
         fname, _ = dialog.getSaveFileName(
             self,
             "Open File",
-            f"{self.examination.path[:-4]}_clean.txt",
+            f"{file_name}",
         )
-        self.examination.save_to_txt(fname)
+        if self.h1.isChecked() == True:
+            self.examination.save_to_txt(fname)
+        else:
+            self.examination.save_to_txt(fname,range=[self.exam_start,self.exam_stop])
         with open(f'{fname[:-4]}_stats.txt', 'w') as f:
             f.write("ilość usuniętych artefaktów \n")
             for key in self.examination.corrected_artifacts.keys():
