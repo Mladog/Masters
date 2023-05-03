@@ -11,7 +11,7 @@ def create_new_graph(obj):
     """
     # inicjalizacja okna obługującego wykresy
     obj.graphWidget = pg.PlotWidget()
-    # obj.graphWidget.setBackground('w')
+    obj.graphWidget.setBackground('w')
     # tytuł okna
     obj.graphWidget.setWindowTitle('Zarejestrowany sygnal')
     # inicjalizacja pierwszego wykresu z zakresem oraz opisami osi
