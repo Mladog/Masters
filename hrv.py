@@ -3,8 +3,8 @@ Module responsible for signal analisys
 """
 
 import numpy as np
-from hrvanalysis import get_time_domain_features, get_poincare_plot_features, get_frequency_domain_features
 from statsmodels.tsa.stattools import adfuller
+from scipy.signal import lombscargle
 import pyqtgraph as pg
 
 def count_hrv(obj):
@@ -36,33 +36,66 @@ def count_hrv(obj):
         obj.hrv_range.addItem(pg.InfiniteLine(obj.exam_stop, pen='r'))
 
     hrv_params = {"stationarity": False if adfuller(obj.examination.RR[obj.exam_start:obj.exam_stop])[1] > 0.05 else True,
-                  "hrv_time": get_time_domain_features(obj.examination.RR[obj.exam_start:obj.exam_stop],False),
-                  "hrv_nonlinear": get_poincare_plot_features(obj.examination.RR[obj.exam_start:obj.exam_stop]),
-                  "hrv_freq": get_frequency_domain_features(obj.examination.RR[obj.exam_start:obj.exam_stop], method="lomb")
+                  "hrv_time": time_domain(obj.examination.RR[obj.exam_start:obj.exam_stop]),
+                  "hrv_nonlinear": non_linear(obj.examination.RR[obj.exam_start:obj.exam_stop])
                 }
     return hrv_params
 
 def create_hrv_summary(hrv_params):
     hrv_time = hrv_params["hrv_time"]
-    hrv_freq = hrv_params["hrv_freq"]
+    #hrv_freq = hrv_params["hrv_freq"]
     hrv_nonlinear = hrv_params["hrv_nonlinear"]
     text = f"""
 HRV w dziedzinie czasu:
-mean_nni: {np.round(hrv_time['mean_nni'], 3)}
+mean_nni: {np.round(hrv_time['mrri'], 3)}
 sdsd: {np.round(hrv_time['sdsd'], 3)}
 sdnn: {np.round(hrv_time['sdnn'], 3)}
 rmssd: {np.round(hrv_time['rmssd'], 3)}
-cvsd: {np.round(hrv_time['cvsd'], 3)}
-
-HRV w dziedzinie częstotliwości:
-hf: {np.round(hrv_freq['hf'],5)}
-lf: {np.round(hrv_freq['lf'],5)}
-vlf: {np.round(hrv_freq['vlf'],5)}
-lf/hf: {np.round(hrv_freq['lf_hf_ratio'],5)}
-total power: {np.round(hrv_freq['total_power'],5)}
 
 HRV nieliniowe:
 SD1: {np.round(hrv_nonlinear['sd1'], 3)}
 SD2: {np.round(hrv_nonlinear['sd2'], 3)}
         """
     return text
+
+def time_domain(RR):
+    diff_rri = np.diff(RR)
+    rmssd = np.sqrt(np.mean(diff_rri ** 2))
+    sdnn = np.std(RR, ddof=1)  # make it calculates N-1
+    sdsd = np.std(diff_rri, ddof=1)
+    nn50 = _nn50(RR)
+    pnn50 = _pnn50(RR)
+    mrri = np.mean(RR)
+    mhr = np.mean(60 / (RR / 1000.0))
+
+    return dict(
+        zip(
+            ["rmssd", "sdnn", "sdsd", "nn50", "pnn50", "mrri", "mhr"],
+            [rmssd, sdnn, sdsd, nn50, pnn50, mrri, mhr],
+        )
+    )
+
+
+def _nn50(RR):
+    return sum(abs(np.diff(RR)) > 50)
+
+
+def _pnn50(RR):
+    return _nn50(RR) / len(RR) * 100
+
+def non_linear(RR):
+    sd1, sd2 = _poincare(RR)
+    return dict(zip(["sd1", "sd2"], [sd1, sd2]))
+
+def _poincare(RR):
+    diff_rri = np.diff(RR)
+    sd1 = np.sqrt(np.std(diff_rri, ddof=1) ** 2 * 0.5)
+    sd2 = np.sqrt(2 * np.std(RR, ddof=1) ** 2 - 0.5 * np.std(diff_rri, ddof=1) ** 2)
+    return sd1, sd2
+
+"""HRV w dziedzinie częstotliwości:
+hf: {np.round(hrv_freq['hf'],5)}
+lf: {np.round(hrv_freq['lf'],5)}
+vlf: {np.round(hrv_freq['vlf'],5)}
+lf/hf: {np.round(hrv_freq['lf_hf_ratio'],5)}
+total power: {np.round(hrv_freq['total_power'],5)}"""

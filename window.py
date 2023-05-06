@@ -21,30 +21,30 @@ class Window(QWidget):
     """
     def __init__(self):
         super().__init__()
-        # dostosowanie wielkości okna
+        # dostosowanie wielkosci okna
         self.resize(700, 500)
-        # tytuł aplikacji
+        # tytul aplikacji
         self.setWindowTitle("Artefakty")
         # ikona aplikacji (TODO)
         self.setWindowIcon(QIcon("icon.jpg"))
-        # ścieżka do obsługiwanego pliku
+        # sciezka do obslugiwanego pliku
         self.fname = ""
         # badanie
         self.examination = Examination()
         initialize_views(self)
-        # zmienna przechowująca aktywne elementy wykresu //chyba nie jest dłużej potrzebne
+        # zmienna przechowujaca aktywne elementy wykresu //chyba nie jest dluzej potrzebne
         self.active_plot_items = []
         self.chosen_artifacts = []
         self.method = "lin"
-        # zmienne przechowująca współrzędne pierwszego punktu do oznaczenia
+        # zmienne przechowujace wspolrzedne pierwszego punktu do oznaczenia
         self.coords_x = None
         self.coords_y = None
-        # stworzenie początkowych widgetów
+        # stworzenie poczatkowych widgetow
         create_widgets(self)
 
     def open_dialog(self):
         """
-        funkcja odpowiedzialna za wybór pliku z okna dialogowego
+        funkcja odpowiedzialna za wybor pliku z okna dialogowego
         """
         dialog = QFileDialog()
         self.fname, _ = dialog.getOpenFileName(

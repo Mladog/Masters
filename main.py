@@ -12,9 +12,7 @@ TODO:
 6) porównanie wszystkich param. z PyBiosem
 7) crush testy
 """
-
 import sys
-
 from PyQt6.QtWidgets import QApplication
 
 from window import Window
