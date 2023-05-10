@@ -131,6 +131,7 @@ dmypy.json
 # personal data
 data*
 Dane*
+yoyo.db
 
 # exe file
 main.exe
