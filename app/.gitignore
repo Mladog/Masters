@@ -130,3 +130,7 @@ dmypy.json
 
 # personal data
 data*
+Dane*
+
+# exe file
+main.exe
