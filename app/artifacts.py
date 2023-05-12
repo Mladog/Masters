@@ -109,7 +109,7 @@ def remove_artifacts(obj):
                     neighborhood = RR_interpolated[val-3:val+3]
                     neighborhood = neighborhood[~np.isnan(neighborhood)]
                     RR_interpolated[val] = np.mean(neighborhood)
-            
+
         # pętla usuwająca wartości NAN z początku badania - te wartości nie mogły zostać zinterpolowane
         while np.isnan(RR_interpolated[0]):
             RR_interpolated = RR_interpolated[1:]

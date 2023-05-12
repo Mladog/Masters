@@ -11,7 +11,7 @@ def count_hrv(obj):
     """
     funkcja zwracająca parametry hrv w dziedzinie czasu, częstotliwości oraz nieliniowe
     """
-    #print(adfuller(examination.RR)[1])
+    
     if obj.h1.isChecked() == True:
         obj.exam_start=0
         obj.exam_stop=len(obj.examination.RR)-1
@@ -34,8 +34,8 @@ def count_hrv(obj):
         obj.hrv_range.clear()
         obj.hrv_range.addItem(pg.InfiniteLine(obj.exam_start, pen='r'))
         obj.hrv_range.addItem(pg.InfiniteLine(obj.exam_stop, pen='r'))
-
-    hrv_params = {"stationarity": False if adfuller(obj.examination.RR[obj.exam_start:obj.exam_stop])[1] > 0.05 else True,
+    stationarity_result = adfuller(obj.examination.RR[obj.exam_start:obj.exam_stop])[1]
+    hrv_params = {"stationarity": stationarity_result,
                   "hrv_time": get_time_domain_features(obj.examination.RR[obj.exam_start:obj.exam_stop],False),
                   "hrv_nonlinear": get_poincare_plot_features(obj.examination.RR[obj.exam_start:obj.exam_stop]),
                   "hrv_freq": get_frequency_domain_features(obj.examination.RR[obj.exam_start:obj.exam_stop], method="lomb")
@@ -43,10 +43,14 @@ def count_hrv(obj):
     return hrv_params
 
 def create_hrv_summary(hrv_params):
+    if hrv_params["stationarity"] <= 0.05:
+        stationarity_text = f"sygnał stacjonarny (p-wartość {round(hrv_params['stationarity'], 3)} dla testu adfuller)"
+    else:
+        stationarity_text = f"Uwaga, badanie niestacjonarne \n(p-wartość test adfuller: {round(hrv_params['stationarity'], 3)})\n"
     hrv_time = hrv_params["hrv_time"]
     hrv_freq = hrv_params["hrv_freq"]
     hrv_nonlinear = hrv_params["hrv_nonlinear"]
-    text = f"""
+    text = f"""{stationarity_text}
 HRV w dziedzinie czasu:
 mean_nni: {np.round(hrv_time['mean_nni'], 3)}
 sdsd: {np.round(hrv_time['sdsd'], 3)}

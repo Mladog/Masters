@@ -4,13 +4,12 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 
 """
 TODO:
-1) doczytać o warunkach zaliczenia artefaktu do zbioru 2/3 (też na potem)
-2) przyczepić legendę inaczej (na potem)
-3) test stacjonarności HRV
-4) opcja zaznaczenia pierwszego i ostatniego bitu klinięciem
-5) uzupełnienie HRV o te, które chce Kuba (czekam na maila)
-6) porównanie wszystkich param. z PyBiosem
-7) crush testy
+
+1) test stacjonarności HRV - w teorii jest
+2) opcja zaznaczenia pierwszego i ostatniego bitu klinięciem
+3) uzupełnienie HRV o te, które chce Kuba (czekam na maila)
+4) crush testy
+5) poprawić przyczepienie legendy
 """
 
 import sys
