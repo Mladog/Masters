@@ -54,13 +54,14 @@ class Examination():
         # usunięcie headera
         self.header = lines[:3]
         lines = lines[3:]
+        print(lines)
         # usunięcie pustych wierszy
         lines_tmp = []
         [lines_tmp.append(x.replace("\n", "")) for x in lines]
         if "" in lines_tmp:
             lines_tmp.remove("")
         # konwersja do np.array z elementami typu int
-        list_int = np.array([int(x) for x in lines_tmp])
+        list_int = np.array([int(x.split("\t")[-1]) for x in lines_tmp])
         return list_int
 
     def get_RR_vect(self):

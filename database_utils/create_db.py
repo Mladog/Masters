@@ -99,6 +99,6 @@ def select_from_db():
 
 
 if __name__ == "__main__":
-    #create_db()
-    #insert_into_db()
-    select_from_db()
+    create_db()
+    insert_into_db()
+    #select_from_db()
