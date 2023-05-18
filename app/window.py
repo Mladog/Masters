@@ -54,6 +54,10 @@ class Window(QWidget):
             self.update_plot()
             self.textbox_end.setText(f"{str(len(self.examination.RR)-1)}")
             self.textbox_start.setText("0")
+            self.h1.setChecked(True)
+            self.coords_x = None
+
+            
 
     def mouse_moved(self, evt):
         """

@@ -105,10 +105,18 @@ def remove_artifacts(obj):
         elif method == "średnia krocząca":
             RR_interpolated = RR_with_nan
             for val in inds[nan_values]:
-                if val >= 3 and val <= len(RR_interpolated)-3:
-                    neighborhood = RR_interpolated[val-3:val+3]
-                    neighborhood = neighborhood[~np.isnan(neighborhood)]
-                    RR_interpolated[val] = np.mean(neighborhood)
+                if 3 <= val <= len(RR_interpolated) - 3:
+                    neighborhood = RR_interpolated[val - 3:val + 4]
+                    temp_means = []
+                    for i in range(4):
+                        temp_means.append(np.nanmean(neighborhood[i:i+4]))
+                    
+                    RR_interpolated[val] = np.mean(temp_means)
+
+                # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
+                elif (val <= 2) or (val >= len(RR_interpolated) - 2):
+                    f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
+                    RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
 
         # pętla usuwająca wartości NAN z początku badania - te wartości nie mogły zostać zinterpolowane
         while np.isnan(RR_interpolated[0]):
