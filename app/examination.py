@@ -54,7 +54,6 @@ class Examination():
         # usunięcie headera
         self.header = lines[:3]
         lines = lines[3:]
-        print(lines)
         # usunięcie pustych wierszy
         lines_tmp = []
         [lines_tmp.append(x.replace("\n", "")) for x in lines]

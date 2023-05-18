@@ -25,8 +25,6 @@ class Window(QWidget):
         self.resize(700, 500)
         # tytuł aplikacji
         self.setWindowTitle("Artefakty")
-        # ikona aplikacji (TODO)
-        self.setWindowIcon(QIcon("icon.jpg"))
         # ścieżka do obsługiwanego pliku
         self.fname = ""
         # badanie
@@ -81,6 +79,9 @@ class Window(QWidget):
             add_point_to_graph(self)
 
     def update_hrv_params(self):
+        """
+        funkcja odpowiadajaca za przeliczenie parametrow hrv i wyswietlenie nowych wartosci
+        """
         new_params = create_hrv_summary(count_hrv(self))
         self.hrv_label.setText(new_params)
    
@@ -112,40 +113,51 @@ class Window(QWidget):
         funkcja odpowiedzialna za zapis danych
         """
         dialog = QFileDialog()
-        file_name = f"{self.examination.path[:-4]}_clean.txt" if self.h1.isChecked() == True else f"{self.examination.path[:-4]}_short_clean.txt"
+        file_name = f"{self.examination.path[:-4]}_clean" if self.h1.isChecked() == True else f"{self.examination.path[:-4]}_short_clean"
         fname, _ = dialog.getSaveFileName(
             self,
             "Open File",
             f"{file_name}",
         )
-        if self.h1.isChecked() == True:
-            self.examination.save_to_txt(fname)
-        else:
-            self.examination.save_to_txt(fname,range=[self.exam_start,self.exam_stop])
-        with open(f'{fname[:-4]}_stats.txt', 'w') as f:
-            f.write("ilość usuniętych artefaktów \n")
-            for key in self.examination.corrected_artifacts.keys():
-                f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
-            f.write("\npoliczone parametry hrv:\n")
-            f.write(self.hrv_label.text())
+        if len(fname)> 0:
+            if ".txt" in fname:
+                fname = fname[:-4]
+            if self.h1.isChecked() == True:
+                self.examination.save_to_txt(f"{fname}.txt")
+            else:
+                self.examination.save_to_txt(f"{fname}.txt",range=[self.exam_start,self.exam_stop])
+            with open(f'{fname}_stats.txt', 'w') as f:
+                f.write("ilość usuniętych artefaktów \n")
+                for key in self.examination.corrected_artifacts.keys():
+                    f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
+                f.write("\npoliczone parametry hrv:\n")
+                f.write(self.hrv_label.text())
 
     def auto_detect(self):
-        self.examination.artifacts["T1_auto"] = find_art1(self)
-        self.examination.artifacts["T2_auto"] = find_art2(self)
-        self.examination.artifacts["T3_auto"] = find_art3(self)
-        self.plot_artifacts()
+        """
+        funkcja znajdujaca artefakty automatycznie i wykreslajaca je na wykresie
+        """
+        if len(self.examination.RR) > 0:
+            self.examination.artifacts["T1_auto"] = find_art1(self)
+            self.examination.artifacts["T2_auto"] = find_art2(self)
+            self.examination.artifacts["T3_auto"] = find_art3(self)
+            self.plot_artifacts()
 
     def delete_chosen_artifacts(self):
+        """
+        funkcja odpowiedzialna za usuwanie wybranych artefaktow
+        """
         self.chosen_artifacts = [chbx.text() for chbx in self.checkbox_list if chbx.isChecked()]
         if len(self.chosen_artifacts) > 0:
             to_del = remove_artifacts(self)
-            #self.examination.get_RR_vect()
             self.update_plot()
             self.del_artifact(to_del)
-            #self.plot_artifacts()
             self.update_hrv_params()
 
     def update_plot(self):
+        """
+        funkcja aktualizująca wykres po zmianie jego parametrow
+        """
         for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
             p.clear()
         
@@ -156,6 +168,10 @@ class Window(QWidget):
         self.update_hrv_params()
         
     def plot_artifacts(self):
+        """
+        funkcja odpowiedzialna za wykreslanie artefaktów na wykresie
+        """
+        # okreslenie miejsc występowania artefaktów
         self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
                                        self.examination.RR[self.examination.artifacts["T1_auto"]],
                                        brush=pg.mkBrush(255, 255, 0, 255), hoverable=True)
@@ -164,7 +180,7 @@ class Window(QWidget):
                                        brush=pg.mkBrush(0, 255, 0, 255), hoverable=True)
         self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
                                        self.examination.RR[self.examination.artifacts["T3_auto"]],
-                                       brush=pg.mkBrush(0, 0, 255, 255), hoverable=True)
+                                       brush=pg.mkBrush(255, 0, 128, 255), hoverable=True)
 
         self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
                                        self.examination.RR[self.examination.artifacts["T1_manual"]],
@@ -179,6 +195,8 @@ class Window(QWidget):
         self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["inne_manual"], 
                                        self.examination.RR[self.examination.artifacts["inne_manual"]],
                                        brush=pg.mkBrush(153, 0, 76, 255), hoverable=True)
+                                       
+        # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
                    self.points_T1_manual, self.points_T2_manual, self.points_T3_manual,

@@ -34,8 +34,8 @@ def create_widgets(obj) -> None:
     # utworzenie opcji do wpisania ręcznego
     obj.textbox_layout = QHBoxLayout()
     obj.label_art1 = QLabel("T1: Rozbieżność w jednym przedziale [ms]")
-    obj.label_art2 = QLabel("T2: Długi interwał po krótkim [ms]")
-    obj.label_art3 = QLabel("T3: Krótki interwał po długim [ms]")
+    obj.label_art2 = QLabel("T2: Długi interwał przed krótkim [ms]")
+    obj.label_art3 = QLabel("T3: Krótki interwał przed długim [ms]")
     obj.textbox_art1 = QLineEdit(obj)
     obj.textbox_art1.setText("200")
     obj.textbox_art2 = QLineEdit(obj)
