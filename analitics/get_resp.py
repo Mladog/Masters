@@ -90,16 +90,15 @@ def find_extrema(signal, window_size, poly_order, min_distance):
 
 
 peaks, troughs, smoothed = find_extrema(RR, 71, 5, 30)
-"""_, signal_peaks = nk.find_peaks(smoothed_RR, 1)"""
 
-
+"""
 plt.plot(RR)
 plt.plot(smoothed, 'g--')
 plt.title('Wykryte początki wdechów i wydechów na sygnale RR')
 plt.scatter(peaks, RR[peaks], color="r")
 plt.scatter(troughs, RR[troughs], color="orange")
 plt.legend(['Surowy sygnał interwałów RR', 'Wygładzony wygnał interwałów RR', 'Maksima', 'Minima'])
-"""peaks[1]['peak_heights']"""
+"""
 
 
 
