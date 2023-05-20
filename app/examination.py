@@ -28,6 +28,8 @@ class Examination():
                             "T2_manual": 0,
                             "T3_manual": 0,
                             "inne_manual": 0}
+            self.deleted_artifacts = 0
+
         else:
             self.RR = self.get_RR_intervals()
             self.RR_vect = self.get_RR_vect()
@@ -47,6 +49,7 @@ class Examination():
                             "T2_manual": 0,
                             "T3_manual": 0,
                             "inne_manual": 0}
+            self.deleted_artifacts = 0
         
     def get_RR_intervals(self):
         with open(self.path) as f:

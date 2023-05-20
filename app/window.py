@@ -17,7 +17,7 @@ from view_manager import initialize_views
 
 class Window(QWidget):
     """
-    main window of app
+    Główne okno aplikacji
     """
     def __init__(self):
         super().__init__()
@@ -54,11 +54,9 @@ class Window(QWidget):
             self.h1.setChecked(True)
             self.coords_x = None
             self.update_plot()
-            self.textbox_end.setText(f"{str(len(self.examination.RR)-1)}")
+            # wpisanie numerów pierwszego i ostatniego interwału do textboxów 
             self.textbox_start.setText("0")
-
-
-            
+            self.textbox_end.setText(f"{str(len(self.examination.RR)-1)}")
 
     def mouse_moved(self, evt):
         """
@@ -130,9 +128,9 @@ class Window(QWidget):
             if self.h1.isChecked() == True:
                 self.examination.save_to_txt(f"{fname}.txt")
             else:
-                self.examination.save_to_txt(f"{fname}.txt",range=[self.exam_start,self.exam_stop])
+                self.examination.save_to_txt(f"{fname}.txt", range=[self.exam_start,self.exam_stop])
             with open(f'{fname}_stats.txt', 'w') as f:
-                f.write("ilość usuniętych artefaktów \n")
+                f.write(f"ilość usuniętych artefaktów: {self.examination.deleted_artifacts}\n")
                 for key in self.examination.corrected_artifacts.keys():
                     f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
                 f.write("\npoliczone parametry hrv:\n")
@@ -142,6 +140,7 @@ class Window(QWidget):
         """
         funkcja znajdujaca artefakty automatycznie i wykreslajaca je na wykresie
         """
+        # warunek wczytania badania
         if len(self.examination.RR) > 0:
             self.examination.artifacts["T1_auto"] = find_art1(self)
             self.examination.artifacts["T2_auto"] = find_art2(self)
@@ -158,6 +157,7 @@ class Window(QWidget):
             self.update_plot()
             self.del_artifact(to_del)
             self.update_hrv_params()
+            self.examination.deleted_artifacts += len(to_del)
 
     def update_plot(self):
         """
