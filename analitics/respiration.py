@@ -4,85 +4,45 @@ Moduł odpowiedzialny za obsługę klasy Examination
 
 import neurokit2 as nk
 import numpy as np
+from scipy.signal import savgol_filter, find_peaks
 
 class Respiration():
     """
     klasa Respiration zawierajaca wszystkie metody i atrybuty dotyczace analizy 
     sygnalu oddechowego pochodzacego z pneumonitora impedancyjnego
     """
-    def __init__(self, RR_signal):
+    def __init__(self, RR_signal, window_size=71, amplitude_min=0.2, min_distance = 30):
         # wyznaczenie poczatkow faz oddechowych
-        self.expiration_onsets, self.inspiration_onsets = self.find_extrema(RR_signal)
+        self.signal, self.expiration_onsets, self.inspiration_onsets = self.find_extrema(RR_signal, window_size=window_size, min_distance =min_distance, amplitude_min=amplitude_min)
         # wyznaczenie czestotliwosci chwilowej
-        self.get_fs_inst()
-        # wyznaczenie objetosci oddechowej
-        self.get_tv()
+        self.fs_inst, self.breath_dur = self.get_fs_inst(RR_signal)
         # wyznaczenie dlugosci faz oddechowych
-        self.get_dur()
+        self.dur_insp, self.dur_exp = self.get_dur(RR_signal)
+        # wyznaczenie parametrow
+        self.RRV_params = self.get_params()
 
-    def get_fs_inst(self):
+
+    def get_fs_inst(self, RR_signal):
         """
         funkcja sluzaca obliczeniu czestotliwosci chwilowej sygnalu (RR - Respiratory Rate)
         """
+        RR_cumsum = np.cumsum(RR_signal)
+        #print(RR_cumsum)
         # wyznaczenie roznic czasowych miedzy kolejnymi poczatkami wdechow
-        t_diff = [j/self.freq-i/self.freq for i, j in 
-                    zip(self.inspiration_onsets[:-1], self.inspiration_onsets[1:])]
+        t_diff = [(j-i)/1000 for i, j in zip(RR_cumsum[self.inspiration_onsets[:-1]], RR_cumsum[self.inspiration_onsets[1:]])]
         # wyznaczenie częstości oddechowej
-        self.fs_inst = [60/t for t in t_diff]
+        return [60/t for t in t_diff], t_diff
 
-    def get_tv(self):
-        """
-        funkcja odpowiedzialna za wyznaczenie objetosci oddechowej
-        """
-        if self.expiration_onsets[0] > self.inspiration_onsets[0]:
-            self.insp_depth = [max(self.signal_raw[this_exp:next_insp]) - min(self.signal_raw[prev_exp:this_insp]) 
-                            for this_exp, next_insp, prev_exp, this_insp in 
-                            zip(self.expiration_onsets[1:], self.inspiration_onsets[2:], self.expiration_onsets, self.inspiration_onsets[1:])]
-            self.exp_depth = [-max(self.signal_raw[prev_insp:this_exp]) + min(self.signal_raw[this_insp:next_exp]) 
-                            for prev_insp, this_exp, this_insp, next_exp in 
-                            zip(self.inspiration_onsets, self.expiration_onsets, self.inspiration_onsets[1:], self.expiration_onsets[1:])]
-
-        else:
-            self.insp_depth = [max(self.signal[this_exp:next_insp]) - min(self.signal[prev_exp:this_insp]) 
-                            for this_exp, next_insp, prev_exp, this_insp in 
-                            zip(self.expiration_onsets[0:], self.inspiration_onsets[1:], self.expiration_onsets, self.inspiration_onsets[1:])]
-            self.exp_depth = [-max(self.signal[prev_insp:this_exp]) + min(self.signal[this_insp:next_exp]) 
-                            for prev_insp, this_exp, this_insp, next_exp in 
-                            zip(self.inspiration_onsets, self.expiration_onsets[1:], self.inspiration_onsets[1:], self.expiration_onsets[2:])]
-
-    def get_dur(self):
+    def get_dur(self, RR_signal):
         """
         funkcja sluzaca wyznaczeniu dlugosci faz wdechu oraz wydechu
         """
-        if self.expiration_onsets[0] > self.inspiration_onsets[0]:
-            self.dur_insp = [insp/self.freq-exp/self.freq for insp, exp in zip(self.inspiration_onsets[1:], self.expiration_onsets)]
-            self.dur_exp = [exp/self.freq-insp/self.freq for insp, exp in zip(self.inspiration_onsets, self.expiration_onsets)]
-        else:
-            self.dur_insp = [insp/self.freq-exp/self.freq for insp, exp in zip(self.inspiration_onsets[1:], self.expiration_onsets)]
-            self.dur_exp = [exp/self.freq-insp/self.freq for insp, exp in zip(self.inspiration_onsets, self.expiration_onsets)]
+        RR_cumsum = np.cumsum(RR_signal)
+        dur_insp = [(exp-insp)/1000 for insp, exp in zip(RR_cumsum[self.inspiration_onsets], RR_cumsum[self.expiration_onsets])]
+        dur_exp = [(insp-exp)/1000 for insp, exp in zip(RR_cumsum[self.inspiration_onsets[1:]], RR_cumsum[self.expiration_onsets[:-1]])]
+        return dur_insp, dur_exp
 
-    def trend(self):
-        """
-        funkcja sluzaca do wyznaczenia trendu w sygnale
-        """
-        print('trend not implemented')
-
-    def complexity_note(self):
-        """
-        funkcja sluzaca do oceny zlozonosci sygnalu
-        """
-        print("complexity not implemented")
-
-    def mov_average(self, window = 125):
-        """
-        funkcja sluzaca do wyznaczenia sredniej ruchomej sygnalu 
-        """
-        limit = len(self.signal) - int(len(self.signal)/window) - window
-        moving_averages = [sum(self.signal[i:i+window])/window for i in range(limit)]
-
-        return moving_averages
-    
-    def _rsp_findpeaks_outliers(self, extrema, amplitude_min=0.2):
+    def _rsp_findpeaks_outliers(self, rsp_cleaned, extrema, amplitude_min):
         """
         Funkcja odpowiedzialna za usunięcie ze zbiory wykrytych ekstremów wskazań fałszywych
         """
@@ -107,7 +67,7 @@ class Respiration():
 
         return extrema, amplitudes
 
-    def _rsp_findpeaks_sanitize(extrema, amplitudes):
+    def _rsp_findpeaks_sanitize(self, extrema, amplitudes):
         """
         funckja odpowiedzialna za ujednolicenie zbioru
         zbior dostosowywany jest w ten sposób, aby zaczynał się od 
@@ -122,7 +82,41 @@ class Respiration():
 
         return peaks, troughs
 
-    def find_extrema(self, signal, window_size = 71, poly_order = 5, min_distance = 30):
+    def _correct_extrema(self, signal, peaks, troughs):
+        """
+        korekcja wyszukanych miejsc wystąpienia maksimów i minimów
+        poprawia efekt nadmiernego wygładzenia sygnału
+        """
+        peaks_tmp = []
+        for peak in peaks:
+            if 5 < peak < len(signal) - 5:
+                vals = list(signal[peak-5:peak+6])
+                max_index = vals.index(max(vals))
+                max_index -= 5
+                if max_index != 0:
+                    peaks_tmp.append(peak + max_index)
+                else:
+                    peaks_tmp.append(peak)
+            else:
+                peaks_tmp.append(peak)
+        
+        troughs_tmp = []
+        for trough in troughs:
+            if 5 < trough < len(signal) - 5:
+                vals = list(signal[trough-5:trough+6])
+                min_index = vals.index(min(vals))
+                min_index -= 5
+                if min_index != 0:
+                    troughs_tmp.append(trough + min_index)
+                else:
+                    troughs_tmp.append(trough)
+            else:
+                troughs_tmp.append(trough)
+        
+        return peaks_tmp, troughs_tmp
+        
+
+    def find_extrema(self, signal, window_size = 71, poly_order = 5, min_distance = 30, amplitude_min=0.2):
         """
         funkcja odpowiedzialna za wyszukanie ekstremow
         """
@@ -140,9 +134,20 @@ class Respiration():
         extrema = np.sort(np.concatenate((peaks, troughs)))
 
         # usunięcie fałszywych wskazań
-        extrema, amplitudes = self._rsp_findpeaks_outliers(smoothed_signal, extrema, amplitude_min=0.3)
+        extrema, amplitudes = self._rsp_findpeaks_outliers(smoothed_signal, extrema, amplitude_min)
         
         # wydobycie ostatecznego zbioru wartości
         peaks, troughs = self._rsp_findpeaks_sanitize(extrema, amplitudes)
+        peaks, troughs = self._correct_extrema(signal, peaks, troughs)
 
-        return peaks, troughs
+        return smoothed_signal, peaks, troughs
+
+    def get_params(self):
+        diffSeg = np.array(self.breath_dur[1::1]) - np.array(self.breath_dur[0:-1:1])
+        RRV_params = dict()
+        RRV_params["mean"] = np.mean(self.breath_dur)
+        RRV_params["std"] = np.std(self.breath_dur)
+        RRV_params["rmssd"] = np.sqrt(np.mean(diffSeg * diffSeg))
+        RRV_params["exp/inp_rate"] = np.mean(self.dur_exp)/np.mean(self.dur_insp)
+        RRV_params["mean_fs_inst"] = np.mean(self.fs_inst)
+        return RRV_params
