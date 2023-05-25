@@ -28,8 +28,9 @@ dir_path = DIR_PATH
 
 # 5 mins in ms
 defined_time = 5*60*1000
-
-for f in file_names:
+# %%
+for f in short_file_names:
+    print(f)
     RRs, header = get_RR_intervals(f"{dir_path}/{f}/{f}_full_examination.txt")
     RRs_sum = RRs.cumsum(0)
     significant_probe = int(data[data["file"] == f]["supine_standing"])

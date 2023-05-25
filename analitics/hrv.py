@@ -2,7 +2,7 @@ import numpy as np
 from statsmodels.tsa.stattools import adfuller
 import scipy
 
-def count_hrv():
+def count_hrv(RR):
     stationarity_result = adfuller(RR)[1]
     hrv_params = {"stationarity": stationarity_result,
                 "hrv_time": count_time_domain(RR),
@@ -11,6 +11,8 @@ def count_hrv():
 
     if stationarity_result:
         hrv_params["hrv_freq"] = count_freq_domain(RR)
+    
+    return hrv_params
 
 
 def count_freq_domain(RR):
@@ -49,12 +51,12 @@ def count_freq_domain(RR):
 
     freqResol = f[1]-f[0]
     results = dict()
-    results["VLFabs"] = np.sum(psd[vlfRange]) * freqResol
-    results["LFabs"] = np.sum(psd[lfRange]) * freqResol
-    results["HFabs"] = np.sum(psd[hfRange]) * freqResol
-    results["LFnu"] = 100.0 * results["LFabs"] / (results["LFabs"] + results["HFabs"])
-    results["HFnu"] = 100.0 * results["HFabs"] / (results["LFabs"] + results["HFabs"])
-    results["LFHF"] = results["LFabs"] / results["HFabs"]
+    results["VLF"] = np.sum(psd[vlfRange]) * freqResol
+    results["LF"] = np.sum(psd[lfRange]) * freqResol
+    results["HF"] = np.sum(psd[hfRange]) * freqResol
+    results["LFnu"] = 100.0 * results["LF"] / (results["LF"] + results["HF"])
+    results["HFnu"] = 100.0 * results["HF"] / (results["LF"] + results["HF"])
+    results["LFHF"] = results["LF"] / results["HF"]
 
     return results
 
