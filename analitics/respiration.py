@@ -148,5 +148,9 @@ class Respiration():
         RRV_params["std"] = np.std(diffs)
         RRV_params["rmssd"] = np.sqrt(np.mean(diffs * diffs))
         RRV_params["exp/inp_rate"] = np.mean(self.dur_exp)/np.mean(self.dur_insp)
+        RRV_params["breathing_regularity"] = 100 \
+                                            - 33.3*(np.tanh(np.std(self.fs_inst)/np.mean(self.fs_inst))
+                                                    +np.tanh(np.std(self.dur_insp)/np.mean(self.dur_insp))
+                                                    +np.tanh(np.std(self.dur_exp)/np.mean(self.dur_exp)))
 
         return RRV_params
