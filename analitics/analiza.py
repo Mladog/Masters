@@ -12,25 +12,27 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
 import csv
+from db_utils import get_data_from_db
 np.random.seed(0)
 
 # %% Załadowanie danych
 
-data = pd.read_csv("C:/Users/mlado/Desktop/wyniki_git1.csv")
+data = get_data_from_db()
 data.replace([np.inf, -np.inf], np.nan, inplace=True)
 data.dropna(axis=0, inplace=True)
 
 # korekta wyniku VO2max dla grupy osób poniżej 13 roku życia
-data.loc[data["competitor_age"] < 13, "yoyo_vo2max"] *= 1.004
+data.loc[data["competitor_age"] < 13, "yoyo_vo2max"] /= 1.10048
 
 # wyodrębnienie wektora z wynikami
 y_vals = data[["yoyo_vo2max"]].values
 
 # odrzucenie z matrycy danych kolumn z wynikami oraz informacjami osobistymi
-data.drop(["Unnamed: 0", "competitor_foldername", "competitor_age","yoyo_level", "yoyo_dist", "yoyo_vo2max", "yoyo_training_load"], axis=1, inplace=True)
+data.drop(["competitor_foldername", "competitor_age","yoyo_level", "yoyo_dist", "yoyo_vo2max", "yoyo_training_load"], axis=1, inplace=True)
 
 # stworzenie rang
 y_ranked = []
+# slownik uzywany podczas klasyfikacji do wielu klas
 """dictionary_of_ranks = {"0": [0, 35],
                         "1": [35, 38.4],
                         "2": [38.4, 45.2],
@@ -38,6 +40,7 @@ y_ranked = []
                         "4": [51, 60],
                         "5": [60, 100]}"""
 
+# slownik uzywany podczas klasyfikacji binarnej
 dictionary_of_ranks = {"0": [0, 51],
                         "1": [51, 100]}
 

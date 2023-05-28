@@ -6,7 +6,7 @@ import pandas as pd
 path = "C:/Users/mlado/Desktop/nowa_matryca.xlsx"
 data = pd.read_excel(path, header=0)
 data_clean = data[["Wiek kalendarzowy ", "Yo-Yo level [ilość]", "Yo-Yo dystans [m]", "Yo-Yo VO2max [ml/kg/min]", "Yo-Yo training load"]]
-data_clean["Nazwisko"] = ddata_cleanata["Nazwisko"].str.replace(" ", "")
+data_clean["Nazwisko"] = data_clean["Nazwisko"].str.replace(" ", "")
 data_clean["folder_name"] = [f"{index+1}_{row['Nazwisko']}" for index, row in data.iterrows()]
 data_clean = data_clean[~data_clean["folder_name"].isin(ExamsToDrop)]
 
