@@ -54,15 +54,12 @@ class Examination():
     def get_RR_intervals(self):
         with open(self.path) as f:
             lines = f.readlines()
-        # usunięcie headera
-        self.header = lines[:3]
-        lines = lines[3:]
-        # usunięcie pustych wierszy
+
+        vals = [s for s in lines if s.strip().isdigit()]
         lines_tmp = []
-        [lines_tmp.append(x.replace("\n", "")) for x in lines]
+        [lines_tmp.append(x.replace("\n", "")) for x in vals]
         if "" in lines_tmp:
             lines_tmp.remove("")
-        # konwersja do np.array z elementami typu int
         list_int = np.array([int(x.split("\t")[-1]) for x in lines_tmp])
         return list_int
 

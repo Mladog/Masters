@@ -5,11 +5,11 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 """
 TODO:
 
-+1) Zmiana na j. ang
--2) Dodanie funkcji do poprawiania artefaktów w oknie
-+3) Dodanie funkcji do poprawiania artefaktów metodą Marcela (3 z przeszłości + 1 z przyszłości)
--4) Zmiana sposobu podliczania artefaktów (próbka sygnału to element klasy?)
--5) Zmienic kod tak, aby obslugiwal inne pliki niż Kuby
+1) Dodanie funkcji do poprawiania artefaktów w oknie
+2) Dodanie funkcji do poprawiania artefaktów metodą Marcela (tylko próbki z przeszłości, liczba dostosowywalna)
+3) Zmiana sposobu podliczania artefaktów (próbka sygnału to element klasy?)
+4) Dodanie obsługi .xlsx .csv
+5) Zmienić komentarze na j. angielski
 
 """
 
