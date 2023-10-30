@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QPushButton, QButtonGroup, QRadioButton, QLabel, QLineEdit
 
 def initialize_hrv_options(obj):
-    obj.param_hrv_label = QLabel("Sposób liczenia parametrów HRV:")
-    obj.h1 = QRadioButton("całość badania", obj)
-    obj.h2 = QRadioButton("w przedziale", obj)
+    obj.param_hrv_label = QLabel("Counting HRV in:")
+    obj.h1 = QRadioButton("full examination", obj)
+    obj.h2 = QRadioButton("selected section", obj)
 
     obj.hrv_group = QButtonGroup(obj)
     obj.hrv_group.addButton(obj.h1)
@@ -11,11 +11,11 @@ def initialize_hrv_options(obj):
     obj.h1.setChecked(True)
 
     obj.recount = QPushButton(obj)
-    obj.recount.setText("Przelicz HRV")
+    obj.recount.setText("Count HRV")
     obj.recount.clicked.connect(lambda:obj.update_hrv_params())
 
-    obj.start_label = QLabel("interwał początkowy")
-    obj.end_label = QLabel("interwał końcowy")
+    obj.start_label = QLabel("Initial interval")
+    obj.end_label = QLabel("Last interval")
 
     obj.textbox_start = QLineEdit(obj)
     obj.textbox_start.setText("0")

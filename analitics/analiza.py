@@ -6,7 +6,7 @@ from imblearn.over_sampling import ADASYN
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.feature_selection import RFECV
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
@@ -60,12 +60,14 @@ selected_data = pd.DataFrame(X_balanced, columns=rrv_cols)
 
 # %% Nadanie priorytetow cechom
 gb = GradientBoostingClassifier(n_estimators=200, learning_rate=0.1,
-                max_depth=1, random_state=0).fit(selected_data, y_balanced)
+                max_depth=1, random_state=42).fit(selected_data, y_balanced)
+                
 selector = RFECV(gb, step=1, cv=2)
 selector = selector.fit(selected_data, y_balanced)
 # %% Wybór cech przekazanych do uczenia według priorytetu
-number_of_features = 10
+number_of_features = 5
 sel_idxs = np.argpartition(selector.ranking_, number_of_features)[:number_of_features]
+#sel_idxs = np.where(selector.ranking_ == 1)[0]
 data_sel = selected_data.iloc[:, sel_idxs]
 data_sel = selected_data
 
@@ -74,13 +76,14 @@ skf = StratifiedKFold(n_splits=10)
 skf.get_n_splits(data_sel, y_balanced)
 
 results = []
-results.append(["Model", "Mean Accuracy", "Mean Recall", "Mean Precision"])
-#results.append(["Model", "Mean Accuracy", "Mean F1"])
+#results.append(["Model", "Mean Accuracy", "Mean Recall", "Mean Precision", "Mean Specificity"])
+results.append(["Model", "Mean Accuracy", "Mean F1"])
 
 f1 = []
 acc = []
 prec = []
 rec = []
+spec = []
 for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     X_train = data_sel.iloc[train_index, :]
     y_train = np.array(y_balanced)[train_index]
@@ -95,33 +98,33 @@ for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     rf.fit(X_train, y_train)
     y_pred_random_forest = rf.predict(X_test)
     
-    accuracy = accuracy_score(y_test, y_pred_random_forest)
+    """accuracy = accuracy_score(y_test, y_pred_random_forest)
     acc.append(accuracy)
     p= precision_score(y_test, y_pred_random_forest)
     prec.append(p)
     r = recall_score(y_test, y_pred_random_forest)
     rec.append(r)
 
-    """ #print("Fold: ", i)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred_random_forest).ravel()
+    s = tn / (tn+fp)
+    spec.append(s)"""
+
+    #print("Fold: ", i)
     accuracy = accuracy_score(y_test, y_pred_random_forest)
     acc.append(accuracy)
     #print("accuracy: ", accuracy)
     f1_res = f1_score(y_test, y_pred_random_forest, average='macro')
     f1.append(f1_res)
-    #print("f1_score", f1_res)"""
+    #print("f1_score", f1_res)
 
-#results.append(["Random Forest", np.mean(acc), np.mean(f1)])
-results.append(["Random Forest", np.mean(acc), np.mean(rec), np.mean(prec)])
-
-#print("mean acc rf: ", np.mean(acc))
-#print("mean recall rf:", np.mean(rec))
-#print("mean prec rf:", np.mean(prec))
-#print("mean f1 rf: ", np.mean(f1))
+results.append(["Random Forest", np.mean(acc), np.mean(f1)])
+#results.append(["Random Forest", np.mean(acc), np.mean(rec), np.mean(prec), np.mean(spec)])
 
 f1 = []
 acc = []
 prec = []
 rec = []
+spec = []
 for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     X_train = data_sel.iloc[train_index, :]
     y_train = np.array(y_balanced)[train_index]
@@ -136,33 +139,36 @@ for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     clf.fit(X_train, y_train)
     y_pred_svm=clf.predict(X_test)
     
-    accuracy = accuracy_score(y_test, y_pred_svm)
+    """accuracy = accuracy_score(y_test, y_pred_svm)
     acc.append(accuracy)
     p= precision_score(y_test, y_pred_svm)
     prec.append(p)
     r = recall_score(y_test, y_pred_svm)
     rec.append(r)
 
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred_svm).ravel()
+    s = tn / (tn+fp)
+    spec.append(s)"""
 
-    """#print("Fold: ", i)
+
+    #print("Fold: ", i)
     accuracy = accuracy_score(y_test, y_pred_svm)
     acc.append(accuracy)
     #print("accuracy: ", accuracy)
     f1_res = f1_score(y_test, y_pred_svm, average='macro')
     f1.append(f1_res)
-    #print("f1_score", f1_res)"""
+    #print("f1_score", f1_res)
 
-"""print("mean acc svm: ", np.mean(acc))
-print("mean recall svm:", np.mean(rec))
-print("mean prec svm:", np.mean(prec))"""
+
 #print("mean f1 svm: ", np.mean(f1))
-#results.append(["SVM", np.mean(acc), np.mean(f1)])
-results.append(["SVM", np.mean(acc), np.mean(rec), np.mean(prec)])
+results.append(["SVM", np.mean(acc), np.mean(f1)])
+#results.append(["SVM", np.mean(acc), np.mean(rec), np.mean(prec), np.mean(spec)])
 
 f1 = []
 acc = []
 prec = []
 rec = []
+spec = []
 for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     X_train = data_sel.iloc[train_index, :]
     y_train = np.array(y_balanced)[train_index]
@@ -177,33 +183,34 @@ for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     neigh.fit(X_train, y_train)
     y_pred_neigh =neigh.predict(X_test)
     
-    accuracy = accuracy_score(y_test, y_pred_neigh)
+    """accuracy = accuracy_score(y_test, y_pred_neigh)
     acc.append(accuracy)
     p= precision_score(y_test, y_pred_neigh)
     prec.append(p)
     r = recall_score(y_test, y_pred_neigh)
     rec.append(r)
     
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred_neigh).ravel()
+    s = tn / (tn+fp)
+    spec.append(s)"""
 
-    """#print("Fold: ", i)
+    #print("Fold: ", i)
     accuracy = accuracy_score(y_test, y_pred_neigh)
     acc.append(accuracy)
     #print("accuracy: ", accuracy)
     f1_res = f1_score(y_test, y_pred_neigh, average='macro')
     f1.append(f1_res)
-    #print("f1_score", f1_res)"""
-"""print("mean acc KNN: ", np.mean(acc))
-print("mean recall KNN:", np.mean(rec))
-print("mean prec KNN:", np.mean(prec))"""
-#print("mean f1 KNN: ", np.mean(f1))
-#results.append(["KNN", np.mean(acc), np.mean(f1)])
-results.append(["KNN", np.mean(acc), np.mean(rec), np.mean(prec)])
+
+
+results.append(["KNN", np.mean(acc), np.mean(f1)])
+#results.append(["KNN", np.mean(acc), np.mean(rec), np.mean(prec), np.mean(spec)])
 
 
 f1 = []
 acc = []
 prec = []
 rec = []
+spec = []
 for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
     X_train = data_sel.iloc[train_index, :]
     y_train = np.array(y_balanced)[train_index]
@@ -219,27 +226,30 @@ for i, (train_index, test_index) in enumerate(skf.split(data_sel, y_balanced)):
 
     y_pred_gb = gb.predict(X_test)
     
-    accuracy = accuracy_score(y_test, y_pred_gb)
+    """accuracy = accuracy_score(y_test, y_pred_gb)
     acc.append(accuracy)
     p= precision_score(y_test, y_pred_gb)
     prec.append(p)
     r = recall_score(y_test, y_pred_gb)
     rec.append(r)
 
-    """#print("Fold: ", i)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred_gb).ravel()
+    s = tn / (tn+fp)
+    spec.append(s)"""
+    #print("Fold: ", i)
     accuracy = accuracy_score(y_test, y_pred_gb)
     acc.append(accuracy)
     #print("accuracy: ", accuracy)
     f1_res = f1_score(y_test, y_pred_gb, average='macro')
     f1.append(f1_res)
-    #print("f1_score", f1_res)"""
+    #print("f1_score", f1_res)
 
 #print("mean acc gb: ", np.mean(acc))
 #print("mean recall gb:", np.mean(rec))
 #print("mean prec gb:", np.mean(prec))
 #print("mean f1 gb: ", np.mean(f1))
-#results.append(["Gradient Boosting", np.mean(acc), np.mean(f1)])
-results.append(["Gradient Boosting", np.mean(acc), np.mean(rec), np.mean(prec)])
+results.append(["Gradient Boosting", np.mean(acc), np.mean(f1)])
+#results.append(["Gradient Boosting", np.mean(acc), np.mean(rec), np.mean(prec), np.mean(spec)])
 
 output_file = "results.csv"
 

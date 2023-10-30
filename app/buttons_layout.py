@@ -8,7 +8,7 @@ def create_buttons_layout(obj):
     funkcja odpowiedzialna za rozmieszczenie przycisków
     """
     obj.save_btn = QPushButton(obj)
-    obj.save_btn.setText("Zapisz")
+    obj.save_btn.setText("Save")
     obj.save_btn.clicked.connect(lambda:obj.save_data())
     obj.main_layout.addWidget(obj.save_btn)
     
@@ -18,7 +18,7 @@ def create_buttons_layout(obj):
         obj.r_buttons_layout.addWidget(t)
 
     obj.methods_group = QButtonGroup(obj)
-    for i, m in enumerate([obj.m1, obj.m2, obj.m3, obj.m4]):
+    for i, m in enumerate([obj.m1, obj.m2, obj.m3, obj.m4, obj.m5]):
         obj.methods_group.addButton(m)
         obj.m_buttons_layout.addWidget(m)
 
@@ -32,17 +32,17 @@ def create_buttons_layout(obj):
         obj.c_buttons_layout.addWidget(t)
 
     obj.art_btn = QPushButton(obj)
-    obj.art_btn.setText("Oznacz manualnie")
+    obj.art_btn.setText("Mark manually")
     obj.art_btn.clicked.connect(lambda:obj.choose_artifact())
     obj.r_buttons_layout.addWidget(obj.art_btn)       
     
     obj.del_btn = QPushButton(obj)
-    obj.del_btn.setText("Usuń artefakt")
+    obj.del_btn.setText("Delete artifact")
     obj.del_btn.clicked.connect(lambda:obj.del_artifact([obj.coords_x]))
     obj.r_buttons_layout.addWidget(obj.del_btn)    
 
     obj.del_btn2 = QPushButton(obj)
-    obj.del_btn2.setText("Skoryguj wybrane")
+    obj.del_btn2.setText("Correct chosen")
     obj.del_btn2.clicked.connect(lambda:obj.delete_chosen_artifacts())
     obj.c_buttons_layout.addWidget(obj.del_btn2)
 

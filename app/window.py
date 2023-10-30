@@ -24,7 +24,7 @@ class Window(QWidget):
         # dostosowanie wielkości okna
         self.resize(700, 500)
         # tytuł aplikacji
-        self.setWindowTitle("Artefakty")
+        self.setWindowTitle("Artifacts")
         # ścieżka do obsługiwanego pliku
         self.fname = ""
         # badanie
@@ -130,10 +130,10 @@ class Window(QWidget):
             else:
                 self.examination.save_to_txt(f"{fname}.txt", range=[self.exam_start,self.exam_stop])
             with open(f'{fname}_stats.txt', 'w') as f:
-                f.write(f"ilość usuniętych artefaktów: {self.examination.deleted_artifacts}\n")
+                f.write(f"number of removed artifacts: {self.examination.deleted_artifacts}\n")
                 for key in self.examination.corrected_artifacts.keys():
                     f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
-                f.write("\npoliczone parametry hrv:\n")
+                f.write("\HRV parameters:\n")
                 f.write(self.hrv_label.text())
 
     def auto_detect(self):
@@ -197,8 +197,8 @@ class Window(QWidget):
                                        self.examination.RR[self.examination.artifacts["T3_manual"]],
                                        brush=pg.mkBrush(102, 0, 204, 255), hoverable=True)
 
-        self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["inne_manual"], 
-                                       self.examination.RR[self.examination.artifacts["inne_manual"]],
+        self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["other_manual"], 
+                                       self.examination.RR[self.examination.artifacts["other_manual"]],
                                        brush=pg.mkBrush(153, 0, 76, 255), hoverable=True)
                                        
         # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
@@ -216,5 +216,5 @@ class Window(QWidget):
         self.legend.addItem(self.points_T1_manual, 'manual T1')
         self.legend.addItem(self.points_T2_manual, 'manual T2')
         self.legend.addItem(self.points_T3_manual, 'manual T3')
-        self.legend.addItem(self.points_diff, 'inne')
+        self.legend.addItem(self.points_diff, 'other')
         self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))

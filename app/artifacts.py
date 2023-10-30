@@ -64,9 +64,11 @@ def remove_artifacts(obj):
     # odczyt wybranych przez uzytkownika artefaktow wybranych do usuniecia
     atypes = obj.chosen_artifacts
     # sprawdzenie wybranej metody korekcji artefaktow
-    for m in [obj.m1, obj.m2, obj.m3, obj.m4]:
-            if m.isChecked() == True:
-                method = m.text()
+    for m in [obj.m1, obj.m2, obj.m3, obj.m4, obj.m5]:
+        print(m.text())
+        if m.isChecked() == True:
+            method = m.text()
+                
     
     
     idx = np.array([])
@@ -100,17 +102,17 @@ def remove_artifacts(obj):
 
         deleted = np.empty(0)
         # korekcja metoda interpolacji liniowej
-        if method == "interpolacja liniowa":
+        if method == "linear interpolation":
             f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
             RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
 
         # korekcja metoda splejnu kubicznego
-        elif method == "splajn kubiczny":
+        elif method == "cubic splain":
             f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])
             RR_interpolated = np.where(np.isfinite(RR_with_nan),RR_with_nan,f(inds))
         
         # korekcja poprzez usuniecie
-        elif method == "usunięcie":
+        elif method == "deletion":
             RR_interpolated = np.delete(RR_with_nan, np.where(~np.isfinite(RR_with_nan)))
             deleted = np.where(~np.isfinite(RR_with_nan))
             for val in inds[nan_values]:
@@ -119,7 +121,7 @@ def remove_artifacts(obj):
                     obj.examination.artifacts[key] = [x - 1 if x >= val else x for x in obj.examination.artifacts[key]]
         
         # korekcja metoda sredniej kroczacej
-        elif method == "średnia krocząca":
+        elif method == "moving average":
             RR_interpolated = RR_with_nan
             for val in inds[nan_values]:
                 # sprawdzenie warunku posiadania odpowiedniego sasiedztwa
@@ -133,6 +135,19 @@ def remove_artifacts(obj):
 
                 # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
                 elif (val <= 2) or (val >= len(RR_interpolated) - 2):
+                    f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
+                    RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
+
+        elif method == "Marcel":
+            RR_interpolated = RR_with_nan
+            for val in inds[nan_values]:
+                # sprawdzenie warunku posiadania odpowiedniego sasiedztwa
+                if 3 <= val <= len(RR_interpolated) - 1:
+                    neighborhood = RR_interpolated[val - 3:val + 1]
+                    RR_interpolated[val] = np.nanmean(neighborhood[i:i+4])
+
+                # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
+                elif (val <= 2) or (val >= len(RR_interpolated) - 1):
                     f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
                     RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
 

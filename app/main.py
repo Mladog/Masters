@@ -5,11 +5,12 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 """
 TODO:
 
-1) test stacjonarności HRV - w teorii jest
-2) opcja zaznaczenia pierwszego i ostatniego bitu klinięciem
-3) uzupełnienie HRV o te, które chce Kuba (czekam na maila)
-4) crush testy
-5) poprawić przyczepienie legendy
++1) Zmiana na j. ang
+-2) Dodanie funkcji do poprawiania artefaktów w oknie
++3) Dodanie funkcji do poprawiania artefaktów metodą Marcela (3 z przeszłości + 1 z przyszłości)
+-4) Zmiana sposobu podliczania artefaktów (próbka sygnału to element klasy?)
+-5) Zmienic kod tak, aby obslugiwal inne pliki niż Kuby
+
 """
 
 import sys

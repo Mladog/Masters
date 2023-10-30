@@ -40,7 +40,7 @@ class Examination():
                             "T1_manual": [],
                             "T2_manual": [],
                             "T3_manual": [],
-                            "inne_manual": []}
+                            "other_manual": []}
 
             self.corrected_artifacts = {"T1_auto": 0,
                             "T2_auto": 0,
@@ -48,7 +48,7 @@ class Examination():
                             "T1_manual": 0,
                             "T2_manual": 0,
                             "T3_manual": 0,
-                            "inne_manual": 0}
+                            "other_manual": 0}
             self.deleted_artifacts = 0
         
     def get_RR_intervals(self):

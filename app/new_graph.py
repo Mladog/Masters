@@ -13,12 +13,12 @@ def create_new_graph(obj):
     obj.graphWidget = pg.PlotWidget()
     obj.graphWidget.setBackground('w')
     # tytuł okna
-    obj.graphWidget.setWindowTitle('Zarejestrowany sygnal')
+    obj.graphWidget.setWindowTitle('Registered signal')
     # inicjalizacja pierwszego wykresu z zakresem oraz opisami osi
     obj.plot_label = obj.graphWidget.plotItem
     obj.plot_label.setYRange(-100, 1000, padding=0)
     obj.plot_label.setXRange(-100, 30000, padding=0)
-    obj.plot_label.setLabels(left = 'RR [ms]', bottom = 'nr kolejnego interwału')
+    obj.plot_label.setLabels(left = 'RR [ms]', bottom = 'nr of next interval')
 
     # inicjalizacja drugiego wykresu wyświetlajacego artefakty
     obj.plot_art = pg.ViewBox()

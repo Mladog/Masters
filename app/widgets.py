@@ -18,7 +18,7 @@ def create_widgets(obj) -> None:
 
     # utworzenie etykiety z wyśrodkowanym tekstem
     # oraz dodanie jej do głównego układu
-    obj.label = QLabel("Aplikacja do wyłapywania artefaktów")
+    obj.label = QLabel("Aplication to catch artifacts")
     obj.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     obj.first_row.addWidget(obj.label)
     obj.main_layout.addLayout(obj.first_row)
@@ -27,15 +27,15 @@ def create_widgets(obj) -> None:
     # wczytania nowego pliku
     obj.file_btn = QPushButton(obj)
     obj.file_btn.resize(100, 50)
-    obj.file_btn.setText("Wczytaj plik")
+    obj.file_btn.setText("Load file")
     obj.first_row.addWidget(obj.file_btn)
     obj.file_btn.clicked.connect(obj.open_dialog)
 
     # utworzenie opcji do wpisania ręcznego
     obj.textbox_layout = QHBoxLayout()
-    obj.label_art1 = QLabel("T1: Rozbieżność w jednym przedziale [ms]")
-    obj.label_art2 = QLabel("T2: Długi interwał przed krótkim [ms]")
-    obj.label_art3 = QLabel("T3: Krótki interwał przed długim [ms]")
+    obj.label_art1 = QLabel("T1: Difference in one section [ms]")
+    obj.label_art2 = QLabel("T2: Long interval before short one [ms]")
+    obj.label_art3 = QLabel("T3: Short interval before long one [ms]")
     obj.textbox_art1 = QLineEdit(obj)
     obj.textbox_art1.setText("200")
     obj.textbox_art2 = QLineEdit(obj)
@@ -50,7 +50,7 @@ def create_widgets(obj) -> None:
     obj.main_layout.addLayout(obj.textbox_layout)
 
     obj.auto_art = QPushButton(obj)
-    obj.auto_art.setText("Wyznacz artefakty automatycznie")
+    obj.auto_art.setText("Artifacts auto-finding")
     obj.auto_art.clicked.connect(lambda:obj.auto_detect())
     obj.main_layout.addWidget(obj.auto_art)
 
@@ -72,13 +72,14 @@ def create_widgets(obj) -> None:
     obj.t1 = QRadioButton("T1", obj)
     obj.t2 = QRadioButton("T2", obj)
     obj.t3 = QRadioButton("T3", obj)
-    obj.diff = QRadioButton("inne", obj)
+    obj.diff = QRadioButton("other", obj)
 
     # utworzenie przycisków radiowych do wyboru metody usunięcia artefaktów
-    obj.m1 = QRadioButton("interpolacja liniowa", obj)
-    obj.m2 = QRadioButton("splajn kubiczny", obj)
-    obj.m3 = QRadioButton("usunięcie", obj)
-    obj.m4 = QRadioButton("średnia krocząca", obj)
+    obj.m1 = QRadioButton("linear interpolation", obj)
+    obj.m2 = QRadioButton("cubic splain", obj)
+    obj.m3 = QRadioButton("deletion", obj)
+    obj.m4 = QRadioButton("moving average", obj)
+    obj.m5 = QRadioButton("Marcel", obj)
 
     # utworzenie przycisków do usuwania grup artefaktów
     obj.t1_auto = QCheckBox("T1_auto")
