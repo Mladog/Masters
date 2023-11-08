@@ -97,14 +97,23 @@ def remove_artifacts(obj):
         # korekcja metoda interpolacji liniowej
         if method == "linear interpolation":
             f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
-            RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
+            for interval in self.examination.RR_intervals:
+                # Check if the interval value needs correction (e.g., if it's NaN)
+                if np.isnan(interval.value):
+                    # Apply linear interpolation
+                    interval.value = f(interval.value)
 
         # korekcja metoda splejnu kubicznego
         elif method == "cubic splain":
             f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])
-            RR_interpolated = np.where(np.isfinite(RR_with_nan),RR_with_nan,f(inds))
+            for interval in self.examination.RR_intervals:
+                # Check if the interval value needs correction (e.g., if it's NaN)
+                if np.isnan(interval.value):
+                    # Apply linear interpolation
+                    interval.value = f(interval.value)
         
-        # korekcja poprzez usuniecie
+        # TO DO 
+        # korekcja poprzez usuniecie 
         elif method == "deletion":
             RR_interpolated = np.delete(RR_with_nan, np.where(~np.isfinite(RR_with_nan)))
             deleted = np.where(~np.isfinite(RR_with_nan))
