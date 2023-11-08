@@ -176,6 +176,8 @@ class Window(QWidget):
         """
         funkcja odpowiedzialna za wykreslanie artefaktów na wykresie
         """
+        #self.exam_start
+        #self.exam_stop
         # okreslenie miejsc występowania artefaktów
         self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
                                        self.examination.RR[self.examination.artifacts["T1_auto"]],
@@ -200,7 +202,12 @@ class Window(QWidget):
         self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["other_manual"], 
                                        self.examination.RR[self.examination.artifacts["other_manual"]],
                                        brush=pg.mkBrush(153, 0, 76, 255), hoverable=True)
-                                       
+        
+        """for points in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
+                   self.points_T1_manual, self.points_T2_manual, self.points_T3_manual,
+                   self.points_diff]:
+            points = list(filter(lambda x: x > self.exam_start ))"""
+
         # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
         self.p3.clear()
         for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,

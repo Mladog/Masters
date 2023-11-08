@@ -2,6 +2,7 @@
 Examination Class
 """
 import numpy as np
+from interval import Interval
 
 
 class Examination():
@@ -9,7 +10,7 @@ class Examination():
         self.path = path
         if self.path == None:
             self.RR = []
-            self.RR_vect = []
+            self.t = []
             self.duration = 0
             self.header = []
             # zainicjowanie słownika artefaktów
@@ -32,7 +33,7 @@ class Examination():
 
         else:
             self.RR = self.get_RR_intervals()
-            self.RR_vect = self.get_RR_vect()
+            self.RR_intervals = [Interval(RR) for RR in self.RR]
             # zainicjowanie słownika artefaktów
             self.artifacts = {"T1_auto": [],
                             "T2_auto": [],
@@ -62,16 +63,6 @@ class Examination():
             lines_tmp.remove("")
         list_int = np.array([int(x.split("\t")[-1]) for x in lines_tmp])
         return list_int
-
-    def get_RR_vect(self):
-        """
-        Funkcja odpowiedzialna za utworzenie wektora zer i jedynek,
-        w którym "1" oznacza miejsce wystąpienia załamka R. 
-        """
-        self.duration = np.sum(self.RR) # czas wyrażony w milisekundach
-        peak_vect = np.zeros(int(self.duration))
-        np.put(peak_vect, self.RR, 1)
-        return peak_vect
 
     def save_to_txt(self, path=None, range=None):
         if path == None:

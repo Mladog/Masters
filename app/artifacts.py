@@ -11,15 +11,13 @@ def find_art1(obj):
     funkcja do wyszukiwania artefaktów typu 1
     """
     diff = int(obj.textbox_art1.text())
-    # obliczone różnice między obecnym i poprzednim interwałem
-    d_prev = [1 if abs(d) > diff else 0 for d in obj.examination.RR[1:] - obj.examination.RR[:-1]]
+    # count differences between this and previous interval
+    d_prev = [1 if abs(intervals[i].value - intervals[i-1].value) > diff else 0 for i in range(1, len(intervals))]
     d_prev.insert(0, 0)
-    # obliczone różnice między obecnym i następnym interwałem
-    d_next = [1 if abs(d) > diff else 0 for d in obj.examination.RR[:-1] - obj.examination.RR[1:]]
+    # count differences between this and next interval
+    d_next = [1 if abs(intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
     d_next.insert(-1, 0)
 
-    # wyszukanie miejsc, w których próbka ma diff ms rożnicy między zarówno
-    # poprzednim jak i następnym interwałem
     final_list = [sum(value) for value in zip(d_prev, d_next)]
     idx = np.where(np.array(final_list) == 2)[0]
 
@@ -31,11 +29,9 @@ def find_art2(obj):
     """
     diff = int(obj.textbox_art2.text())
     # obliczone różnice między obecnym i następnym interwałem
-    d_next = [1 if d > diff else 0 for d in obj.examination.RR[:-1] - obj.examination.RR[1:]]
+    d_next = [1 if (intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
     d_next.insert(-1, 0)
 
-    # wyszukanie miejsc, w których próbka ma diff ms rożnicy między zarówno
-    # poprzednim jak i następnym interwałem
     idx = np.where(np.array(d_next) == 1)[0]
     art1 = find_art1(obj)
     final = [x for x in idx if x not in art1]
@@ -47,11 +43,9 @@ def find_art3(obj):
     """
     diff = int(obj.textbox_art3.text())
     # obliczone różnice między obecnym i następnym interwałem
-    d_next = [1 if -d > diff else 0 for d in obj.examination.RR[:-1] - obj.examination.RR[1:]]
+    d_next = [1 if (intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
     d_next.insert(-1, 0)
 
-    # wyszukanie miejsc, w których próbka ma diff ms rożnicy między zarówno
-    # poprzednim jak i następnym interwałem
     idx = np.where(np.array(d_next) == 1)[0]
     art1 = find_art1(obj)
     final = [x for x in idx if x not in art1]
@@ -70,7 +64,6 @@ def remove_artifacts(obj):
             method = m.text()
                 
     
-    
     idx = np.array([])
     for atype in atypes:
         # zaktualizowanie liczby skorygowanych artefaktow
@@ -81,12 +74,12 @@ def remove_artifacts(obj):
     # sprawdzenie ilosci
     if len(idx) > 0:
         # konwersja elementow listy do typu float
-        RR_copy = [float(R) for R in obj.examination.RR]
+        # RR_copy = [float(R) for R in obj.examination.RR]
         # zastapienie wartosci artefaktow wartoscia nan
         for i in idx:
-            RR_copy[int(i)] = np.nan
+            obj.examination.RR_intervals[int(i)].value = np.nan
 
-        RR_with_nan = np.array(RR_copy)
+        RR_with_nan = np.array([interval.value for interval in RR_intervals])
         # utworzenie wektora indeksow
         inds = np.arange(RR_with_nan.shape[0])
         # odczytanie wartosci nieprzeznaczonych do usuniecia
@@ -95,10 +88,10 @@ def remove_artifacts(obj):
         nan_values = np.where(~np.isfinite(RR_with_nan))
 
         # usuniecie korygowanych artefaktow z list
-        for val in inds[nan_values]:
+        """for val in inds[nan_values]:
             for key in obj.examination.artifacts.keys():
                 if val in obj.examination.artifacts[key]:
-                    obj.examination.artifacts[key].remove(val)
+                    obj.examination.artifacts[key].remove(val)"""
 
         deleted = np.empty(0)
         # korekcja metoda interpolacji liniowej
