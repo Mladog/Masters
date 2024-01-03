@@ -128,14 +128,22 @@ class Window(QWidget):
             if self.h1.isChecked() == True:
                 self.examination.save_to_txt(f"{fname}.txt")
             else:
-                self.examination.save_to_txt(f"{fname}.txt", range=[self.exam_start,self.exam_stop])
+                self.examination.save_to_txt(f"{fname}.txt", range=[self.exam_start, self.exam_stop])
             with open(f'{fname}_stats.txt', 'w') as f:
                 f.write(f"number of removed artifacts: {self.examination.original_len - len(self.examination.RR_intervals)}\n")
-                f.write(f"number of corrected artifacts: {sum(interval.artifact for interval in self.examination.RR_intervals if interval.artifact)}")
+                f.write(f"number of corrected artifacts: {sum(1 for interval in self.examination.RR_intervals if (interval.artifact is not None))}\n")
+                
                 for key in self.examination.RR_intervals[0].correction_methods.keys():
                     sum_pre_mean_artifact_true = sum(interval.correction_methods[key] for interval in self.examination.RR_intervals if interval.artifact)
-                    f.write("%s: %s\n" % (key, sum_pre_mean_artifact_true))
-                    
+                    f.write("Count for %s: %s\n" % (key, sum_pre_mean_artifact_true))
+
+                unique_artifacts = {interval.artifact for interval in self.examination.RR_intervals if interval.artifact}
+
+                sums_by_artifact = {value: sum(1 for interval in self.examination.RR_intervals if interval.artifact == value) for value in unique_artifacts}
+                for artifact, total_sum in sums_by_artifact.items():
+                    f.write(f"Count for {artifact}: {total_sum}")
+    
+                
                 f.write("\nHRV parameters:\n")
                 f.write(self.hrv_label.text())
 

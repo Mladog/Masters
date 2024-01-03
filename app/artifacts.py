@@ -70,12 +70,13 @@ def remove_artifacts(obj):
         for el in obj.examination.artifacts[atype]:
             if (el >= obj.exam_start and el <= obj.exam_stop):
                 idx = np.append(idx, el)
+                if obj.examination.RR_intervals[int(el)].artifact == None:
+                    obj.examination.RR_intervals[int(el)].artifact = atype
 
     # sprawdzenie ilosci
     if len(idx) > 0:
         for i in idx:
             obj.examination.RR_intervals[int(i)].value = np.nan
-            obj.examination.RR_intervals[int(i)].artifact = True
 
         RR_with_nan = np.array([interval.value for interval in obj.examination.RR_intervals])
         # utworzenie wektora indeksow
