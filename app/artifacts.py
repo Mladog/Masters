@@ -201,7 +201,7 @@ def remove_artifacts(obj):
                 if i in obj.examination.artifacts[key]:
                     obj.examination.artifacts[key].remove(i)
         
-        # zwrocenie indeksow elementow przeznaczonych do usuniecia z sygnalu
+        obj.examination.RR  = np.array([interval.value for interval in obj.examination.RR_intervals])
         return deleted
     else:
         return np.array([])
