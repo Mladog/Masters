@@ -12,10 +12,10 @@ def find_art1(obj):
     """
     diff = int(obj.textbox_art1.text())
     # count differences between this and previous interval
-    d_prev = [1 if abs(intervals[i].value - intervals[i-1].value) > diff else 0 for i in range(1, len(intervals))]
+    d_prev = [1 if abs(obj.examination.RR_intervals[i].value - obj.examination.RR_intervals[i-1].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_prev.insert(0, 0)
     # count differences between this and next interval
-    d_next = [1 if abs(intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
+    d_next = [1 if abs(obj.examination.RR_intervals[i-1].value - obj.examination.RR_intervals[i].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_next.insert(-1, 0)
 
     final_list = [sum(value) for value in zip(d_prev, d_next)]
@@ -29,7 +29,7 @@ def find_art2(obj):
     """
     diff = int(obj.textbox_art2.text())
     # obliczone różnice między obecnym i następnym interwałem
-    d_next = [1 if (intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
+    d_next = [1 if (obj.examination.RR_intervals[i-1].value - obj.examination.RR_intervals[i].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_next.insert(-1, 0)
 
     idx = np.where(np.array(d_next) == 1)[0]
@@ -43,7 +43,7 @@ def find_art3(obj):
     """
     diff = int(obj.textbox_art3.text())
     # obliczone różnice między obecnym i następnym interwałem
-    d_next = [1 if (intervals[i-1].value - intervals[i].value) > diff else 0 for i in range(1, len(intervals))]
+    d_next = [1 if (obj.examination.RR_intervals[i-1].value - obj.examination.RR_intervals[i].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_next.insert(-1, 0)
 
     idx = np.where(np.array(d_next) == 1)[0]
@@ -53,33 +53,28 @@ def find_art3(obj):
 
 def remove_artifacts(obj):
     '''
-    funkcja zmieniająca wybrane artefakty
+    function to change chosen artifacts
     '''
     # odczyt wybranych przez uzytkownika artefaktow wybranych do usuniecia
     atypes = obj.chosen_artifacts
     # sprawdzenie wybranej metody korekcji artefaktow
     for m in [obj.m1, obj.m2, obj.m3, obj.m4, obj.m5]:
-        print(m.text())
         if m.isChecked() == True:
             method = m.text()
-                
     
     idx = np.array([])
     for atype in atypes:
         # zaktualizowanie liczby skorygowanych artefaktow
-        obj.examination.corrected_artifacts[atype]  += len(obj.examination.artifacts[atype])
+        obj.examination.corrected_artifacts[atype] += len(obj.examination.artifacts[atype])
         # dodanie odczytanych artefaktow do listy przeznaczonej do skorygowania
         idx = np.append(idx, obj.examination.artifacts[atype])
 
     # sprawdzenie ilosci
     if len(idx) > 0:
-        # konwersja elementow listy do typu float
-        # RR_copy = [float(R) for R in obj.examination.RR]
-        # zastapienie wartosci artefaktow wartoscia nan
         for i in idx:
             obj.examination.RR_intervals[int(i)].value = np.nan
 
-        RR_with_nan = np.array([interval.value for interval in RR_intervals])
+        RR_with_nan = np.array([interval.value for interval in obj.examination.RR_intervals])
         # utworzenie wektora indeksow
         inds = np.arange(RR_with_nan.shape[0])
         # odczytanie wartosci nieprzeznaczonych do usuniecia
@@ -96,49 +91,59 @@ def remove_artifacts(obj):
         deleted = np.empty(0)
         # korekcja metoda interpolacji liniowej
         if method == "linear interpolation":
-            f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
-            for interval in self.examination.RR_intervals:
+            f = interpolate.interp1d(inds[~np.isnan(RR_with_nan)], RR_with_nan[~np.isnan(RR_with_nan)], bounds_error=False)
+
+            for i, interval in enumerate(obj.examination.RR_intervals):
                 # Check if the interval value needs correction (e.g., if it's NaN)
                 if np.isnan(interval.value):
-                    # Apply linear interpolation
-                    interval.value = f(interval.value)
+                    # Apply linear interpolation based on the index associated with the interval
+                    interval.value = f(i)
 
         # korekcja metoda splejnu kubicznego
         elif method == "cubic splain":
             f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])
-            for interval in self.examination.RR_intervals:
+            for i, interval in enumerate(obj.examination.RR_intervals):
                 # Check if the interval value needs correction (e.g., if it's NaN)
                 if np.isnan(interval.value):
-                    # Apply linear interpolation
-                    interval.value = f(interval.value)
+                    # Apply linear interpolation based on the index associated with the interval
+                    interval.value = f(i)
         
         # TO DO 
         # korekcja poprzez usuniecie 
         elif method == "deletion":
-            RR_interpolated = np.delete(RR_with_nan, np.where(~np.isfinite(RR_with_nan)))
-            deleted = np.where(~np.isfinite(RR_with_nan))
-            for val in inds[nan_values]:
-                for key in obj.examination.artifacts.keys():
-                    # aktualizacja indeksow nieusunietych artefaktow 
-                    obj.examination.artifacts[key] = [x - 1 if x >= val else x for x in obj.examination.artifacts[key]]
-        
+            obj.examination.deleted_artifacts += sum(np.isnan(interval.value) for interval in obj.examination.RR_intervals)
+            obj.examination.RR_intervals = list(filter(lambda interval: not np.isnan(interval.value), obj.examination.RR_intervals))
+            """for key in obj.examination.artifacts.keys():
+                if len(obj.examination.RR_intervals) in obj.examination.artifacts[key]:
+                    obj.examination.artifacts[key].remove(len(obj.examination.RR_intervals))"""                                                                                                                                                     
+
         # korekcja metoda sredniej kroczacej
         elif method == "moving average":
-            RR_interpolated = RR_with_nan
             for val in inds[nan_values]:
                 # sprawdzenie warunku posiadania odpowiedniego sasiedztwa
-                if 3 <= val <= len(RR_interpolated) - 3:
-                    neighborhood = RR_interpolated[val - 3:val + 4]
+                if 3 <= val <= len(obj.examination.RR_intervals) - 3:
+                    neighborhood = RR_with_nan[val - 3:val + 4]
                     temp_means = []
                     for i in range(4):
                         temp_means.append(np.nanmean(neighborhood[i:i+4]))
                     
-                    RR_interpolated[val] = np.mean(temp_means)
+                    obj.examination.RR_intervals[val].value = np.mean(temp_means)
 
                 # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
-                elif (val <= 2) or (val >= len(RR_interpolated) - 2):
-                    f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
-                    RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
+                else:
+                    f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])                               
+                    if np.isnan(obj.examination.RR_intervals[val].value):
+                        # Apply linear interpolation based on the index associated with the interval
+                        obj.examination.RR_intervals[val].value = f(i)
+            # if any nans left (happen if there are many nans near each other or at the beggining/end - interpolate)
+            RR_with_nan_new = np.array([interval.value for interval in obj.examination.RR_intervals])
+            f = interpolate.interp1d(inds[~np.isnan(RR_with_nan_new)], RR_with_nan[~np.isnan(RR_with_nan_new)], bounds_error=False)
+            for i, interval in enumerate(obj.examination.RR_intervals):
+                # Check if the interval value needs correction (e.g., if it's NaN)
+                if np.isnan(interval.value):
+                    # Apply linear interpolation based on the index associated with the interval
+                    interval.value = f(i)
+
 
         elif method == "Marcel":
             RR_interpolated = RR_with_nan
@@ -154,20 +159,25 @@ def remove_artifacts(obj):
                     RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
 
         # pętla usuwająca wartości NAN z początku badania - te wartości nie mogły zostać zinterpolowane
-        while np.isnan(RR_interpolated[0]):
-            RR_interpolated = RR_interpolated[1:]
+        while np.isnan(obj.examination.RR_intervals[0].value):
+            obj.examination.RR_intervals.pop(0)
             # jesli usunieto 1. element - zaktualizować indeksy
             for key in obj.examination.artifacts.keys():
                 obj.examination.artifacts[key] = [x - 1 for x in obj.examination.artifacts[key]]
         
         # pętla usuwająca wartości NAN z końca badania
-        while np.isnan(RR_interpolated[-1]):
-            RR_interpolated = RR_interpolated[:-1]
+        while np.isnan(obj.examination.RR_intervals[-1].value):
+            obj.examination.RR_intervals.pop(-1)
             for key in obj.examination.artifacts.keys():
-                if len(RR_interpolated) in obj.examination.artifacts[key]:
-                    obj.examination.artifacts[key].remove(len(RR_interpolated))
+                if len(obj.examination.RR_intervals) in obj.examination.artifacts[key]:
+                    obj.examination.artifacts[key].remove(len(obj.examination.RR_intervals))
 
-        obj.examination.RR = np.array([int(element) for element in RR_interpolated])
+        obj.examination.RR = np.array([int(element.value) for element in obj.examination.RR_intervals])
+        for key in obj.examination.artifacts.keys():
+            for i in idx:
+                if i in obj.examination.artifacts[key]:
+                    obj.examination.artifacts[key].remove(i)
+        
         # zwrocenie indeksow elementow przeznaczonych do usuniecia z sygnalu
         return deleted
     else:
