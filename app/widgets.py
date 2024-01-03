@@ -4,7 +4,8 @@ moduł odpowiedzialny za utworzenie widgetów
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QLineEdit,
-                             QPushButton, QRadioButton, QButtonGroup)
+                             QPushButton, QRadioButton, QButtonGroup,
+                             QComboBox)
 
 from buttons_layout import create_buttons_layout
 from RR_layout import create_RR_layout
@@ -79,7 +80,12 @@ def create_widgets(obj) -> None:
     obj.m2 = QRadioButton("cubic splain", obj)
     obj.m3 = QRadioButton("deletion", obj)
     obj.m4 = QRadioButton("moving average", obj)
-    obj.m5 = QRadioButton("Marcel", obj)
+    obj.m5 = QRadioButton("pre mean", obj)
+
+    # przycisk definijący ilosc interwałów przed artefaktem
+    obj.pre_mean_count = QComboBox()
+    obj.pre_mean_count.addItems(["2", "3", "4", "5", "6", "7", "8", "9", "10"])
+    obj.pre_mean_count.setCurrentText("4")
 
     # utworzenie przycisków do usuwania grup artefaktów
     obj.t1_auto = QCheckBox("T1_auto")

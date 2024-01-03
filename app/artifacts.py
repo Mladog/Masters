@@ -65,9 +65,11 @@ def remove_artifacts(obj):
     idx = np.array([])
     for atype in atypes:
         # zaktualizowanie liczby skorygowanych artefaktow
-        obj.examination.corrected_artifacts[atype] += len(obj.examination.artifacts[atype])
+        obj.examination.corrected_artifacts[atype] += len(obj.examination.artifacts[atype]) #to chyba do usuniecia
         # dodanie odczytanych artefaktow do listy przeznaczonej do skorygowania
-        idx = np.append(idx, obj.examination.artifacts[atype])
+        for el in obj.examination.artifacts[atype]:
+            if (el >= obj.exam_start and el <= obj.exam_stop):
+                idx = np.append(idx, el)
 
     # sprawdzenie ilosci
     if len(idx) > 0:
@@ -98,6 +100,7 @@ def remove_artifacts(obj):
                 if np.isnan(interval.value):
                     # Apply linear interpolation based on the index associated with the interval
                     interval.value = f(i)
+                    interval.correction_methods[method] += 1
 
         # korekcja metoda splejnu kubicznego
         elif method == "cubic splain":
@@ -107,6 +110,7 @@ def remove_artifacts(obj):
                 if np.isnan(interval.value):
                     # Apply linear interpolation based on the index associated with the interval
                     interval.value = f(i)
+                    interval.correction_methods[method] += 1
         
         # TO DO 
         # korekcja poprzez usuniecie 
@@ -128,13 +132,16 @@ def remove_artifacts(obj):
                         temp_means.append(np.nanmean(neighborhood[i:i+4]))
                     
                     obj.examination.RR_intervals[val].value = np.mean(temp_means)
+                    obj.examination.RR_intervals[val].correction_methods[method] += 1
 
                 # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
                 else:
-                    f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])                               
+                    f = interpolate.interp1d(inds[nan_values], RR_with_nan[nan_values], bounds_error=False)                            
                     if np.isnan(obj.examination.RR_intervals[val].value):
                         # Apply linear interpolation based on the index associated with the interval
                         obj.examination.RR_intervals[val].value = f(i)
+                        obj.examination.RR_intervals[val].correction_methods["linear interpolation"] += 1
+
             # if any nans left (happen if there are many nans near each other or at the beggining/end - interpolate)
             RR_with_nan_new = np.array([interval.value for interval in obj.examination.RR_intervals])
             f = interpolate.interp1d(inds[~np.isnan(RR_with_nan_new)], RR_with_nan[~np.isnan(RR_with_nan_new)], bounds_error=False)
@@ -143,20 +150,36 @@ def remove_artifacts(obj):
                 if np.isnan(interval.value):
                     # Apply linear interpolation based on the index associated with the interval
                     interval.value = f(i)
+                    interval.correction_methods["linear interpolation"] += 1
 
-
-        elif method == "Marcel":
-            RR_interpolated = RR_with_nan
+        elif method == "pre mean":
             for val in inds[nan_values]:
+                value_from_gui = int(obj.pre_mean_count.currentText())
                 # sprawdzenie warunku posiadania odpowiedniego sasiedztwa
-                if 3 <= val <= len(RR_interpolated) - 1:
-                    neighborhood = RR_interpolated[val - 3:val + 1]
-                    RR_interpolated[val] = np.nanmean(neighborhood[i:i+4])
+                if value_from_gui <= val <= len(obj.examination.RR_intervals):
+                    neighborhood = RR_with_nan[val - value_from_gui:val]
+                    
+                    obj.examination.RR_intervals[val].value = np.mean(neighborhood)
+                    obj.examination.RR_intervals[val].correction_methods[method] += 1
 
                 # jeśli przypadek skrajny o mniejszym sąsiedztwie niż zakładamy (+/-3) - interpolacja
-                elif (val <= 2) or (val >= len(RR_interpolated) - 1):
-                    f = interpolate.interp1d(inds[values], RR_with_nan[values], bounds_error=False)
-                    RR_interpolated = np.where(np.isfinite(RR_with_nan), RR_with_nan, f(inds))
+                else:
+                    f = interpolate.interp1d(inds[nan_values], RR_with_nan[nan_values], bounds_error=False)
+                    if np.isnan(obj.examination.RR_intervals[val].value):
+                        # Apply cubic spline interpolation based on the index associated with the interval
+                        obj.examination.RR_intervals[val].value = f(val)
+                        obj.examination.RR_intervals[val].correction_methods["linear interpolation"] += 1
+
+            # if any nans left (happen if there are many nans near each other or at the beggining/end - interpolate)
+            RR_with_nan_new = np.array([interval.value for interval in obj.examination.RR_intervals])
+            f = interpolate.interp1d(inds[~np.isnan(RR_with_nan_new)], RR_with_nan_new[~np.isnan(RR_with_nan_new)], bounds_error=False)
+            for i, interval in enumerate(obj.examination.RR_intervals):
+                # Check if the interval value needs correction (e.g., if it's NaN)
+                if np.isnan(interval.value):
+                    # Apply linear interpolation based on the index associated with the interval
+                    interval.value = f(i)
+                    interval.correction_methods["linear interpolation"] += 1
+
 
         # pętla usuwająca wartości NAN z początku badania - te wartości nie mogły zostać zinterpolowane
         while np.isnan(obj.examination.RR_intervals[0].value):

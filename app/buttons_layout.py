@@ -18,9 +18,15 @@ def create_buttons_layout(obj):
         obj.r_buttons_layout.addWidget(t)
 
     obj.methods_group = QButtonGroup(obj)
-    for i, m in enumerate([obj.m1, obj.m2, obj.m3, obj.m4, obj.m5]):
+    for i, m in enumerate([obj.m1, obj.m2, obj.m3, obj.m4]):
         obj.methods_group.addButton(m)
         obj.m_buttons_layout.addWidget(m)
+
+    obj.m_buttons_layout.addLayout(obj.pre_mean_buttons_layout)
+
+    obj.pre_mean_buttons_layout.addWidget(obj.m5)
+    obj.methods_group.addButton(obj.m5)
+    obj.pre_mean_buttons_layout.addWidget(obj.pre_mean_count)
 
     obj.t1.setChecked(True)
     #obj.toggle_button_selected = "T1"

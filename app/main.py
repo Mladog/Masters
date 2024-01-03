@@ -5,11 +5,10 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 """
 TODO:
 
-1) Dodanie funkcji do poprawiania artefaktów w oknie
-2) Dodanie funkcji do poprawiania artefaktów metodą Marcela (tylko próbki z przeszłości, liczba dostosowywalna)
-3) Zmiana sposobu podliczania artefaktów (próbka sygnału to element klasy?)
-4) Dodanie obsługi .xlsx .csv
-5) Zmienić komentarze na j. angielski
+1) Dodanie funkcji do poprawiania artefaktów metodą Marcela (tylko próbki z przeszłości, liczba dostosowywalna)
+2) Dodanie obsługi .xlsx .csv
+3) Zmienić komentarze na j. angielski
+4) Korekcja raportu
 
 """
 

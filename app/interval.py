@@ -9,5 +9,5 @@ class Interval():
             "cubic splain": 0,
             "deletion": 0,
             "moving average": 0,
-            "Marcel": 0
+            "pre mean": 0
         }
