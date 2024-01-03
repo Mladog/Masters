@@ -75,6 +75,7 @@ def remove_artifacts(obj):
     if len(idx) > 0:
         for i in idx:
             obj.examination.RR_intervals[int(i)].value = np.nan
+            obj.examination.RR_intervals[int(i)].artifact = True
 
         RR_with_nan = np.array([interval.value for interval in obj.examination.RR_intervals])
         # utworzenie wektora indeksow

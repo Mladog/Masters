@@ -130,10 +130,13 @@ class Window(QWidget):
             else:
                 self.examination.save_to_txt(f"{fname}.txt", range=[self.exam_start,self.exam_stop])
             with open(f'{fname}_stats.txt', 'w') as f:
-                f.write(f"number of removed artifacts: {self.examination.deleted_artifacts}\n")
-                for key in self.examination.corrected_artifacts.keys():
-                    f.write("%s, %s\n" % (key, self.examination.corrected_artifacts[key]))
-                f.write("\HRV parameters:\n")
+                f.write(f"number of removed artifacts: {self.examination.original_len - len(self.examination.RR_intervals)}\n")
+                f.write(f"number of corrected artifacts: {sum(interval.artifact for interval in self.examination.RR_intervals if interval.artifact)}")
+                for key in self.examination.RR_intervals[0].correction_methods.keys():
+                    sum_pre_mean_artifact_true = sum(interval.correction_methods[key] for interval in self.examination.RR_intervals if interval.artifact)
+                    f.write("%s: %s\n" % (key, sum_pre_mean_artifact_true))
+                    
+                f.write("\nHRV parameters:\n")
                 f.write(self.hrv_label.text())
 
     def auto_detect(self):

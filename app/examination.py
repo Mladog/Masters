@@ -15,6 +15,7 @@ class Examination():
             self.t = []
             self.duration = 0
             self.extension = ''
+            self.original_len = 0
             # zainicjowanie słownika artefaktów
             self.artifacts = {"T1_auto": [],
                             "T2_auto": [],
@@ -37,6 +38,7 @@ class Examination():
             self.extension = self.path.split('.')[-1]
             self.RR = self.get_RR_intervals()
             self.RR_intervals = [Interval(RR) for RR in self.RR]
+            self.original_len = len(self.RR_intervals)
             # zainicjowanie słownika artefaktów
             self.artifacts = {"T1_auto": [],
                             "T2_auto": [],
