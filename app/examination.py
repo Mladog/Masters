@@ -3,7 +3,7 @@ Examination Class
 """
 import numpy as np
 from interval import Interval
-
+import re
 
 class Examination():
     def __init__(self, path=None):
@@ -56,12 +56,12 @@ class Examination():
         with open(self.path) as f:
             lines = f.readlines()
 
-        vals = [s for s in lines if s.strip().isdigit()]
+        vals = [s for s in lines if re.match(r'^\s*-?\d+(\.\d+)?\s*$', s.strip()) is not None]
         lines_tmp = []
         [lines_tmp.append(x.replace("\n", "")) for x in vals]
         if "" in lines_tmp:
             lines_tmp.remove("")
-        list_int = np.array([int(x.split("\t")[-1]) for x in lines_tmp])
+        list_int = np.array([float(x.split("\t")[-1]) for x in lines_tmp])
         return list_int
 
     def save_to_txt(self, path=None, range=None):
@@ -69,13 +69,9 @@ class Examination():
             path = f"{self.path[:-4]}_noartifacts.txt"
         if range == None:
             with open(f"{path}", "w") as txt_file:
-                for el in self.header:
-                    txt_file.write(f"{el}")
-                for el in self.RR:
-                    txt_file.write(f"{el}" + "\n")
+                for el in self.RR_intervals:
+                    txt_file.write(f"{el.value}" + "\n")
         else:
             with open(f"{path}", "w") as txt_file:
-                for el in self.header:
-                    txt_file.write(f"{el}")
-                for el in self.RR[range[0]:range[1]]:
-                    txt_file.write(f"{el}" + "\n")
+                for el in self.RR_intervals[range[0]:range[1]]:
+                    txt_file.write(f"{el.value}" + "\n")

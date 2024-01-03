@@ -94,7 +94,7 @@ def create_widgets(obj) -> None:
     obj.t1_man = QCheckBox("T1_manual")
     obj.t2_man = QCheckBox("T2_manual")
     obj.t3_man = QCheckBox("T3_manual")
-    obj.diff_man = QCheckBox("inne_manual")
+    obj.diff_man = QCheckBox("other_manual")
     obj.checkbox_list = [obj.t1_auto, obj.t2_auto, obj.t3_auto,
                          obj.t1_man, obj.t2_man, obj.t3_man,
                          obj.diff_man]

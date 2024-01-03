@@ -43,7 +43,7 @@ def create_buttons_layout(obj):
     obj.r_buttons_layout.addWidget(obj.art_btn)       
     
     obj.del_btn = QPushButton(obj)
-    obj.del_btn.setText("Delete artifact")
+    obj.del_btn.setText("Delete selection")
     obj.del_btn.clicked.connect(lambda:obj.del_artifact([obj.coords_x]))
     obj.r_buttons_layout.addWidget(obj.del_btn)    
 

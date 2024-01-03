@@ -5,10 +5,9 @@ Moduł odpowiedzialny za uruchomienie aplikacji
 """
 TODO:
 
-1) Dodanie funkcji do poprawiania artefaktów metodą Marcela (tylko próbki z przeszłości, liczba dostosowywalna)
-2) Dodanie obsługi .xlsx .csv
+1) Dodanie obsługi .xlsx .csv
+2) Korekcja raportu
 3) Zmienić komentarze na j. angielski
-4) Korekcja raportu
 
 """
 
