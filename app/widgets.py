@@ -19,9 +19,8 @@ def create_widgets(obj) -> None:
 
     # utworzenie etykiety z wyśrodkowanym tekstem
     # oraz dodanie jej do głównego układu
-    obj.label = QLabel("Aplication to catch artifacts")
-    obj.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    obj.first_row.addWidget(obj.label)
+    obj.label = QLabel("Load file with extensions .txt, .csv or xls:")
+    obj.first_row.addWidget(obj.label, alignment=Qt.AlignmentFlag.AlignRight)
     obj.main_layout.addLayout(obj.first_row)
 
     # utworzenie przycisku odpowiedzialnego za możliwość 
@@ -49,16 +48,17 @@ def create_widgets(obj) -> None:
         obj.textbox_layout.addWidget(el)
     
     obj.main_layout.addLayout(obj.textbox_layout)
+    
+    # dodanie układu hrv
+    obj.main_layout.addLayout(obj.hrv_options_layout_1)
+    obj.main_layout.addLayout(obj.hrv_options_layout_2)
+    initialize_hrv_options(obj)
+
 
     obj.auto_art = QPushButton(obj)
     obj.auto_art.setText("Artifacts auto-finding")
     obj.auto_art.clicked.connect(lambda:obj.auto_detect())
     obj.main_layout.addWidget(obj.auto_art)
-
-    # dodanie układu hrv
-    obj.main_layout.addLayout(obj.hrv_options_layout_1)
-    obj.main_layout.addLayout(obj.hrv_options_layout_2)
-    initialize_hrv_options(obj)
 
     # dodanie układu RR
     create_RR_layout(obj)

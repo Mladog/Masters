@@ -64,8 +64,6 @@ def remove_artifacts(obj):
     
     idx = np.array([])
     for atype in atypes:
-        # zaktualizowanie liczby skorygowanych artefaktow
-        obj.examination.corrected_artifacts[atype] += len(obj.examination.artifacts[atype]) #to chyba do usuniecia
         # dodanie odczytanych artefaktow do listy przeznaczonej do skorygowania
         for el in obj.examination.artifacts[atype]:
             if (el >= obj.exam_start and el <= obj.exam_stop):
@@ -85,12 +83,6 @@ def remove_artifacts(obj):
         values = np.where(np.isfinite(RR_with_nan))
         # utworzenie wektora wartosci do usuniecia
         nan_values = np.where(~np.isfinite(RR_with_nan))
-
-        # usuniecie korygowanych artefaktow z list
-        """for val in inds[nan_values]:
-            for key in obj.examination.artifacts.keys():
-                if val in obj.examination.artifacts[key]:
-                    obj.examination.artifacts[key].remove(val)"""
 
         deleted = np.empty(0)
         # korekcja metoda interpolacji liniowej
@@ -119,9 +111,7 @@ def remove_artifacts(obj):
         elif method == "deletion":
             obj.examination.deleted_artifacts += sum(np.isnan(interval.value) for interval in obj.examination.RR_intervals)
             obj.examination.RR_intervals = list(filter(lambda interval: not np.isnan(interval.value), obj.examination.RR_intervals))
-            """for key in obj.examination.artifacts.keys():
-                if len(obj.examination.RR_intervals) in obj.examination.artifacts[key]:
-                    obj.examination.artifacts[key].remove(len(obj.examination.RR_intervals))"""                                                                                                                                                     
+                                                                                                                                                 
 
         # korekcja metoda sredniej kroczacej
         elif method == "moving average":

@@ -18,7 +18,7 @@ def create_new_graph(obj):
     obj.plot_label = obj.graphWidget.plotItem
     obj.plot_label.setYRange(-100, 1000, padding=0)
     obj.plot_label.setXRange(-100, 30000, padding=0)
-    obj.plot_label.setLabels(left = 'RR [ms]', bottom = 'nr of next interval')
+    obj.plot_label.setLabels(left = 'RR [ms]', bottom = 'Interval number')
 
     # inicjalizacja drugiego wykresu wyświetlajacego artefakty
     obj.plot_art = pg.ViewBox()

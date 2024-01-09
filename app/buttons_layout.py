@@ -1,16 +1,23 @@
 """
 Moduł służący utworzeniu układu przycisków
 """
-from PyQt6.QtWidgets import QPushButton, QButtonGroup
+from PyQt6.QtWidgets import QPushButton, QButtonGroup, QLabel, QHBoxLayout
+from PyQt6.QtCore import Qt
 
 def create_buttons_layout(obj):
     """
     funkcja odpowiedzialna za rozmieszczenie przycisków
     """
+    obj.save_layout = QHBoxLayout()
+    obj.save_label = QLabel("Save signal, HRV params and summary of correction applied")
+
     obj.save_btn = QPushButton(obj)
     obj.save_btn.setText("Save")
     obj.save_btn.clicked.connect(lambda:obj.save_data())
-    obj.main_layout.addWidget(obj.save_btn)
+
+    obj.main_layout.addLayout(obj.save_layout)
+    obj.save_layout.addWidget(obj.save_label, alignment=Qt.AlignmentFlag.AlignRight)
+    obj.save_layout.addWidget(obj.save_btn)
     
     obj.artifacts_group = QButtonGroup(obj)
     for i, t in enumerate([obj.t1, obj.t2, obj.t3, obj.diff]):

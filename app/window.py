@@ -23,8 +23,12 @@ class Window(QWidget):
         super().__init__()
         # dostosowanie wielkości okna
         self.resize(700, 500)
+        self.setStyleSheet("QLabel{font-size: 8pt;}")
+        #self.setStyleSheet("QRadioButton{font-size: 7pt;}")
+        #self.setStyleSheet("QCheckBox{font-size: 7pt;}")
+        
         # tytuł aplikacji
-        self.setWindowTitle("Artifacts")
+        self.setWindowTitle("Application to correct artifacts in RR intervals")
         # ścieżka do obsługiwanego pliku
         self.fname = ""
         # badanie
@@ -141,7 +145,7 @@ class Window(QWidget):
 
                 sums_by_artifact = {value: sum(1 for interval in self.examination.RR_intervals if interval.artifact == value) for value in unique_artifacts}
                 for artifact, total_sum in sums_by_artifact.items():
-                    f.write(f"Count for {artifact}: {total_sum}")
+                    f.write(f"Count for {artifact}: {total_sum}\n")
     
                 
                 f.write("\nHRV parameters:\n")
@@ -168,7 +172,6 @@ class Window(QWidget):
             self.update_plot()
             self.del_artifact(to_del)
             self.update_hrv_params()
-            self.examination.deleted_artifacts += len(to_del)
 
     def update_plot(self):
         """

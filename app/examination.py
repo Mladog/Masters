@@ -16,23 +16,6 @@ class Examination():
             self.duration = 0
             self.extension = ''
             self.original_len = 0
-            # zainicjowanie słownika artefaktów
-            self.artifacts = {"T1_auto": [],
-                            "T2_auto": [],
-                            "T3_auto": [],
-                            "T1_manual": [],
-                            "T2_manual": [],
-                            "T3_manual": [],
-                            "inne_manual": []}
-
-            self.corrected_artifacts = {"T1_auto": 0,
-                            "T2_auto": 0,
-                            "T3_auto": 0,
-                            "T1_manual": 0,
-                            "T2_manual": 0,
-                            "T3_manual": 0,
-                            "inne_manual": 0}
-            self.deleted_artifacts = 0
 
         else:
             self.extension = self.path.split('.')[-1]
@@ -47,15 +30,6 @@ class Examination():
                             "T2_manual": [],
                             "T3_manual": [],
                             "other_manual": []}
-
-            self.corrected_artifacts = {"T1_auto": 0,
-                            "T2_auto": 0,
-                            "T3_auto": 0,
-                            "T1_manual": 0,
-                            "T2_manual": 0,
-                            "T3_manual": 0,
-                            "other_manual": 0}
-            self.deleted_artifacts = 0
         
     def get_RR_intervals(self):
         if self.extension == 'txt':
