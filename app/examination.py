@@ -23,7 +23,8 @@ class Examination():
             self.RR_intervals = [Interval(RR) for RR in self.RR]
             self.original_len = len(self.RR_intervals)
             # zainicjowanie słownika artefaktów
-            self.artifacts = {"T1_auto": [],
+            self.artifacts = {"Tarvainen": [],
+                            "T1_auto": [],
                             "T2_auto": [],
                             "T3_auto": [],
                             "T1_manual": [],

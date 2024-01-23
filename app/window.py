@@ -8,7 +8,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt6 import QtCore
 
-from artifacts import find_art1, find_art2, find_art3, remove_artifacts
+from artifacts import find_art_tarvainen, find_art1, find_art2, find_art3, remove_artifacts
 from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
@@ -157,6 +157,7 @@ class Window(QWidget):
         """
         # warunek wczytania badania
         if len(self.examination.RR) > 0:
+            self.examination.artifacts["Tarvainen"] = find_art_tarvainen(self)
             self.examination.artifacts["T1_auto"] = find_art1(self)
             self.examination.artifacts["T2_auto"] = find_art2(self)
             self.examination.artifacts["T3_auto"] = find_art3(self)
@@ -193,6 +194,10 @@ class Window(QWidget):
         #self.exam_start
         #self.exam_stop
         # okreslenie miejsc występowania artefaktów
+        self.points_Tarvainen = pg.ScatterPlotItem(self.examination.artifacts["Tarvainen"], 
+                                       self.examination.RR[self.examination.artifacts["Tarvainen"]],
+                                       brush=pg.mkBrush(200, 200, 0, 255), hoverable=True)
+
         self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
                                        self.examination.RR[self.examination.artifacts["T1_auto"]],
                                        brush=pg.mkBrush(255, 255, 0, 255), hoverable=True)
@@ -224,13 +229,14 @@ class Window(QWidget):
 
         # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
         self.p3.clear()
-        for el in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
-                   self.points_T1_manual, self.points_T2_manual, self.points_T3_manual,
-                   self.points_diff]:
+        for el in [self.points_Tarvainen, self.points_T1_auto, self.points_T2_auto, 
+                   self.points_T3_auto, self.points_T1_manual, self.points_T2_manual, 
+                   self.points_T3_manual, self.points_diff]:
             self.p3.addItem(el)
 
         # ustawienia legendy 
         self.legend.clear()
+        self.legend.addItem(self.points_Tarvainen, 'Tarvainen')
         self.legend.addItem(self.points_T1_auto, 'auto T1')
         self.legend.addItem(self.points_T2_auto, 'auto T2')
         self.legend.addItem(self.points_T3_auto, 'auto T3')

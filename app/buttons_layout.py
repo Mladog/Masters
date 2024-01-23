@@ -36,11 +36,10 @@ def create_buttons_layout(obj):
     obj.pre_mean_buttons_layout.addWidget(obj.pre_mean_count)
 
     obj.t1.setChecked(True)
-    #obj.toggle_button_selected = "T1"
 
     obj.m1.setChecked(True)
 
-    for t in [obj.t1_auto, obj.t2_auto, obj.t3_auto,
+    for t in [obj.Tarvainen, obj.t1_auto, obj.t2_auto, obj.t3_auto,
               obj.t1_man, obj.t2_man, obj.t3_man, obj.diff_man]:
         obj.c_buttons_layout.addWidget(t)
 
