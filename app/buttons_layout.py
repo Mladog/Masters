@@ -58,3 +58,4 @@ def create_buttons_layout(obj):
     obj.del_btn2.clicked.connect(lambda:obj.delete_chosen_artifacts())
     obj.c_buttons_layout.addWidget(obj.del_btn2)
 
+

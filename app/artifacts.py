@@ -11,26 +11,26 @@ def find_art_tarvainen(obj,
                         c2=0.17,
                         alpha=5.2,
                         window_width=91,
-                        medfilt_order=11,
-                        sampling_rate=1000,):
+                        medfilt_order=11):
 
     def _compute_threshold(signal, alpha, window_width):
         df = pd.DataFrame({"signal": np.abs(signal)})
         q1 = (
             df.rolling(window_width, center=True, min_periods=1)
             .quantile(0.25)
-            .signal.values
+            .signal
         )
         q3 = (
             df.rolling(window_width, center=True, min_periods=1)
             .quantile(0.75)
-            .signal.values
+            .signal
         )
         th = alpha * ((q3 - q1) / 2)
 
         return th
 
-    rr = list(map(lambda x: x.value, obj.examination.RR_intervals))
+    rr = list(map(lambda x: x, obj.examination.RR))
+    #rr = list(map(int, rr))
     drrs = np.ediff1d(rr, to_begin=0)
     drrs[0] = np.mean(drrs[1:])
     th1 = _compute_threshold(drrs, alpha, window_width)
@@ -318,7 +318,7 @@ def remove_artifacts(obj):
                 if i in obj.examination.artifacts[key]:
                     obj.examination.artifacts[key].remove(i)
         
-        obj.examination.RR  = np.array([interval.value for interval in obj.examination.RR_intervals])
+        obj.examination.RR  = np.array([int(interval.value) for interval in obj.examination.RR_intervals])
         return deleted
     else:
         return np.array([])

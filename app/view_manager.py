@@ -11,6 +11,7 @@ def initialize_views(obj):
     obj.r_buttons_layout = QHBoxLayout()
     obj.c_buttons_layout = QHBoxLayout()
     obj.m_buttons_layout = QHBoxLayout()
+    obj.a_buttons_layout = QHBoxLayout()
     obj.pre_mean_buttons_layout = QHBoxLayout()
     obj.hrv_options_layout_1 = QHBoxLayout()
     obj.hrv_options_layout_2 = QHBoxLayout()

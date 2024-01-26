@@ -54,11 +54,26 @@ def create_widgets(obj) -> None:
     obj.main_layout.addLayout(obj.hrv_options_layout_2)
     initialize_hrv_options(obj)
 
+    # artifacts detedction layout
+    obj.main_layout.addLayout(obj.a_buttons_layout)
 
+    # Button that allows for auto T1-T3 detection
     obj.auto_art = QPushButton(obj)
-    obj.auto_art.setText("Artifacts auto-finding")
+    obj.auto_art.setText("T1-T3 auto-finding")
     obj.auto_art.clicked.connect(lambda:obj.auto_detect())
-    obj.main_layout.addWidget(obj.auto_art)
+    obj.a_buttons_layout.addWidget(obj.auto_art)
+
+    # Button that allows for auto Tarvainen detection
+    obj.tarv_art = QPushButton(obj)
+    obj.tarv_art.setText("Tarvainen auto-finding")
+    obj.tarv_art.clicked.connect(lambda:obj.auto_tarvainen())
+    obj.a_buttons_layout.addWidget(obj.tarv_art)
+
+    # Button that allows for clearing detections
+    obj.clear_art = QPushButton(obj)
+    obj.clear_art.setText("Clear detections")
+    obj.clear_art.clicked.connect(lambda:obj.clear_artifacts())
+    obj.a_buttons_layout.addWidget(obj.clear_art)
 
     # dodanie układu RR
     create_RR_layout(obj)

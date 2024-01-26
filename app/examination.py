@@ -20,7 +20,7 @@ class Examination():
         else:
             self.extension = self.path.split('.')[-1]
             self.RR = self.get_RR_intervals()
-            self.RR_intervals = [Interval(RR) for RR in self.RR]
+            self.RR_intervals = [Interval(int(RR)) for RR in self.RR]
             self.original_len = len(self.RR_intervals)
             # zainicjowanie słownika artefaktów
             self.artifacts = {"Tarvainen": [],
@@ -34,15 +34,13 @@ class Examination():
         
     def get_RR_intervals(self):
         if self.extension == 'txt':
-            with open(self.path) as f:
-                lines = f.readlines()
-
-            vals = [s for s in lines if re.match(r'^\s*-?\d+(\.\d+)?\s*$', s.strip()) is not None]
-            lines_tmp = []
-            [lines_tmp.append(x.replace("\n", "")) for x in vals]
-            if "" in lines_tmp:
-                lines_tmp.remove("")
-            list_int = np.array([float(x.split("\t")[-1]) for x in lines_tmp])
+            intervals = []
+            with open(self.path, 'r') as file:
+                for line in file:
+                    line = line.strip()
+                    if all(char.isdigit() or char == '.' for char in line):
+                        intervals.append(int(float(line)))
+                list_int = np.array(intervals)
 
         elif self.extension == 'xls':
             df = pd.read_excel(self.path, sheet_name=None)

@@ -41,6 +41,7 @@ class Window(QWidget):
         # zmienne przechowująca współrzędne pierwszego punktu do oznaczenia
         self.coords_x = None
         self.coords_y = None
+        
         # stworzenie początkowych widgetów
         create_widgets(self)
 
@@ -157,12 +158,24 @@ class Window(QWidget):
         """
         # warunek wczytania badania
         if len(self.examination.RR) > 0:
-            self.examination.artifacts["Tarvainen"] = find_art_tarvainen(self)
             self.examination.artifacts["T1_auto"] = find_art1(self)
             self.examination.artifacts["T2_auto"] = find_art2(self)
             self.examination.artifacts["T3_auto"] = find_art3(self)
             self.plot_artifacts()
 
+    def auto_tarvainen(self):
+        if len(self.examination.RR) > 0:
+            self.examination.artifacts["Tarvainen"] = find_art_tarvainen(self)
+            self.plot_artifacts()
+    
+    def clear_artifacts(self):
+        if len(self.examination.RR) > 0:
+            for key in (self.examination.artifacts.keys()):
+                self.examination.artifacts[key] = []
+            self.plot_artifacts()
+            #self.p3.clear()
+
+            
     def delete_chosen_artifacts(self):
         """
         funkcja odpowiedzialna za usuwanie wybranych artefaktow

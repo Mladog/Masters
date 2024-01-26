@@ -2,7 +2,7 @@
 
 class Interval():
     def __init__(self, value):
-        self.value = float(value)
+        self.value = int(value)
         self.artifact = None
         self.correction_methods = {
             "linear interpolation": 0,
