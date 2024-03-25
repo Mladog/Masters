@@ -130,9 +130,9 @@ def count_freq_domain(RR):
 def count_nonlinear(RR):
     diff_rr_intervals = np.diff(RR)
     results = dict()
-    # szerokosc elipsy Pointcare
+    # szerokosc elipsy Poincare
     results["sd1"] = np.sqrt(np.std(diff_rr_intervals, ddof=1) ** 2 * 0.5)
-    # dlugosc elipsy Pointcare
+    # dlugosc elipsy Poincare
     results["sd2"] = np.sqrt(2 * np.std(RR, ddof=1) ** 2 - 0.5 * np.std(diff_rr_intervals, ddof=1) ** 2)
     return results
 

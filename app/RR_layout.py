@@ -17,3 +17,4 @@ def create_RR_layout(obj):
     obj.hrv_label = QLabel("Waiting for \nsignal")
     obj.hrv_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     obj.RR_layout.addWidget(obj.hrv_label)
+    obj.RR_layout.addWidget(obj.poincareWidget)

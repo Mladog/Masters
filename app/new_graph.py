@@ -63,3 +63,4 @@ def add_point_to_graph(obj):
                                        size = 12,
                                        hoverable=True)
     obj.plot_cursor.addItem(obj.cursor_coords)
+

@@ -33,6 +33,7 @@ class Window(QWidget):
         self.fname = ""
         # badanie
         self.examination = Examination()
+        self.create_poincare()
         initialize_views(self)
         # zmienna przechowująca aktywne elementy wykresu //chyba nie jest dłużej potrzebne
         self.active_plot_items = []
@@ -43,7 +44,9 @@ class Window(QWidget):
         self.coords_y = None
         
         # stworzenie początkowych widgetów
+        
         create_widgets(self)
+       
 
     def open_dialog(self):
         """
@@ -187,11 +190,36 @@ class Window(QWidget):
             self.del_artifact(to_del)
             self.update_hrv_params()
 
+    def create_poincare(self):
+        self.poincareWidget = pg.PlotWidget()
+        self.poincareWidget.setBackground('w')
+        self.poincareWidget.setWindowTitle('Poincare plot')
+
+        self.poincare_label = self.poincareWidget.plotItem
+        self.poincare_label.setLabels(left='RRi+1 [ms]', bottom='RRi [ms]')
+
+        self.plot_poincare = pg.ViewBox()
+        self.poincare_label.scene().addItem(self.plot_poincare)
+        self.plot_poincare.setXLink(self.poincare_label)
+        self.plot_poincare.setYLink(self.poincare_label)
+
+        def updateViews():
+            self.plot_poincare.setGeometry(self.poincare_label.vb.sceneBoundingRect())
+            self.plot_poincare.linkedViewChanged(self.poincare_label.vb, self.plot_poincare.XAxis)
+
+        updateViews()
+        self.poincare_label.vb.sigResized.connect(updateViews)
+
+        # Define scatter plot for Poincaré plot
+        self.points_poincare = pg.ScatterPlotItem(pen=pg.mkPen(None), brush=pg.mkBrush(102, 0, 204, 255), size=5, symbol='o', pxMode=True)
+        self.plot_poincare.addItem(self.points_poincare)
+    
+
     def update_plot(self):
         """
         funkcja aktualizująca wykres po zmianie jego parametrow
         """
-        for p in [self.plot_art, self.p3, self.plot_cursor, self.legend]:
+        for p in [self.plot_art, self.p3, self.plot_cursor, self.legend, self.plot_poincare]:
             p.clear()
         
         self.plot_label.setXRange(-100, len(self.examination.RR)+150, padding=0)
@@ -199,6 +227,19 @@ class Window(QWidget):
         self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
         self.plot_art.addItem(self.RRs)
         self.update_hrv_params()
+        # Set x and y limits for the Poincaré plot
+
+        x_min = min(self.examination.RR) - 5
+        x_max = max(self.examination.RR) + 5
+        y_min = min(self.examination.RR) - 5
+        y_max = max(self.examination.RR) + 5
+        self.plot_poincare.setXRange(x_min, x_max)
+        self.plot_poincare.setYRange(y_min, y_max)
+        
+        self.points_poincare.setData(self.examination.RR[:-1], self.examination.RR[1:]) 
+        self.plot_poincare.addItem(self.points_poincare)
+
+
         
     def plot_artifacts(self):
         """
@@ -246,9 +287,10 @@ class Window(QWidget):
                    self.points_T3_auto, self.points_T1_manual, self.points_T2_manual, 
                    self.points_T3_manual, self.points_diff]:
             self.p3.addItem(el)
+        
 
         # ustawienia legendy 
-        self.legend.clear()
+        """self.legend.clear()
         self.legend.addItem(self.points_Tarvainen, 'Tarvainen')
         self.legend.addItem(self.points_T1_auto, 'auto T1')
         self.legend.addItem(self.points_T2_auto, 'auto T2')
@@ -257,4 +299,4 @@ class Window(QWidget):
         self.legend.addItem(self.points_T2_manual, 'manual T2')
         self.legend.addItem(self.points_T3_manual, 'manual T3')
         self.legend.addItem(self.points_diff, 'other')
-        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))
+        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))"""
