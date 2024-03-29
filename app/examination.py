@@ -24,13 +24,11 @@ class Examination():
             self.original_len = len(self.RR_intervals)
             # zainicjowanie słownika artefaktów
             self.artifacts = {"Tarvainen": [],
+                            "Quotient": [],
                             "T1_auto": [],
                             "T2_auto": [],
                             "T3_auto": [],
-                            "T1_manual": [],
-                            "T2_manual": [],
-                            "T3_manual": [],
-                            "other_manual": []}
+                            "Manual": []}
         
     def get_RR_intervals(self):
         if self.extension == 'txt':

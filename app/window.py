@@ -8,7 +8,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QFileDialog, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt6 import QtCore
 
-from artifacts import find_art_tarvainen, find_art1, find_art2, find_art3, remove_artifacts
+from artifacts import find_art_tarvainen, find_art_quotient, find_art1, find_art2, find_art3, remove_artifacts, find_art_quotient
 from examination import Examination
 from hrv import count_hrv, create_hrv_summary
 from widgets import create_widgets
@@ -100,12 +100,8 @@ class Window(QWidget):
         """
         funkcja oznaczająca nowy artefakt
         """
-        if self.coords_x:
-            for b in [self.t1, self.t2, self.t3, self.diff]:
-                if b.isChecked() == True:
-                    self.toggle_button_selected = b.text()
-            self.examination.artifacts[self.toggle_button_selected + "_manual"].append(self.coords_x)
-            self.plot_artifacts()
+        self.examination.artifacts["Manual"].append(self.coords_x)
+        self.plot_artifacts()
 
     def del_artifact(self, points_to_del):
         """ 
@@ -164,11 +160,17 @@ class Window(QWidget):
             self.examination.artifacts["T1_auto"] = find_art1(self)
             self.examination.artifacts["T2_auto"] = find_art2(self)
             self.examination.artifacts["T3_auto"] = find_art3(self)
+            #self.examination.artifacts["Poincare"] = find_art_quotient(self)
             self.plot_artifacts()
 
     def auto_tarvainen(self):
         if len(self.examination.RR) > 0:
             self.examination.artifacts["Tarvainen"] = find_art_tarvainen(self)
+            self.plot_artifacts()
+
+    def auto_poincare(self):
+        if len(self.examination.RR) > 0:
+            self.examination.artifacts["Quotient"] = find_art_quotient(self)
             self.plot_artifacts()
     
     def clear_artifacts(self):
@@ -211,8 +213,13 @@ class Window(QWidget):
         self.poincare_label.vb.sigResized.connect(updateViews)
 
         # Define scatter plot for Poincaré plot
-        self.points_poincare = pg.ScatterPlotItem(pen=pg.mkPen(None), brush=pg.mkBrush(102, 0, 204, 255), size=5, symbol='o', pxMode=True)
+        self.points_poincare = pg.ScatterPlotItem(pen=pg.mkPen(None), brush=pg.mkBrush('b'), 
+                                                 pxMode=True)
+        self.points_poin_art = pg.ScatterPlotItem(pen=pg.mkPen(None), brush=pg.mkBrush(6, 214, 160, 255),
+                                                  pxMode=True)
+
         self.plot_poincare.addItem(self.points_poincare)
+        self.plot_poincare.addItem(self.points_poin_art)
     
 
     def update_plot(self):
@@ -226,20 +233,16 @@ class Window(QWidget):
         self.plot_label.setYRange(-100, max(self.examination.RR)+150, padding=0)
         self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
         self.plot_art.addItem(self.RRs)
-        self.update_hrv_params()
-        # Set x and y limits for the Poincaré plot
+        self.update_hrv_params() 
 
-        x_min = min(self.examination.RR) - 5
-        x_max = max(self.examination.RR) + 5
-        y_min = min(self.examination.RR) - 5
-        y_max = max(self.examination.RR) + 5
-        self.plot_poincare.setXRange(x_min, x_max)
-        self.plot_poincare.setYRange(y_min, y_max)
+        # Set x and y limits for the Poincaré plot
+        xy_min = min(self.examination.RR) - 5
+        xy_max = max(self.examination.RR) + 5
+        self.plot_poincare.setXRange(xy_min, xy_max)
+        self.plot_poincare.setYRange(xy_min, xy_max)
         
         self.points_poincare.setData(self.examination.RR[:-1], self.examination.RR[1:]) 
         self.plot_poincare.addItem(self.points_poincare)
-
-
         
     def plot_artifacts(self):
         """
@@ -249,32 +252,28 @@ class Window(QWidget):
         #self.exam_stop
         # okreslenie miejsc występowania artefaktów
         self.points_Tarvainen = pg.ScatterPlotItem(self.examination.artifacts["Tarvainen"], 
-                                       self.examination.RR[self.examination.artifacts["Tarvainen"]],
-                                       brush=pg.mkBrush(200, 200, 0, 255), hoverable=True)
+                                       self.examination.RR[self.examination.artifacts["Tarvainen"]],            
+                                       brush=pg.mkBrush(255, 196, 61, 255), hoverable=True)
+
+        self.points_Poincare = pg.ScatterPlotItem(self.examination.artifacts["Quotient"], 
+                                       self.examination.RR[self.examination.artifacts["Quotient"]],
+                                       brush=pg.mkBrush(6, 214, 160, 255), hoverable=True)
 
         self.points_T1_auto = pg.ScatterPlotItem(self.examination.artifacts["T1_auto"], 
                                        self.examination.RR[self.examination.artifacts["T1_auto"]],
-                                       brush=pg.mkBrush(255, 255, 0, 255), hoverable=True)
+                                       brush=pg.mkBrush(192, 214, 223, 255), hoverable=True)
+
         self.points_T2_auto = pg.ScatterPlotItem(self.examination.artifacts["T2_auto"], 
                                        self.examination.RR[self.examination.artifacts["T2_auto"]],
-                                       brush=pg.mkBrush(0, 255, 0, 255), hoverable=True)
+                                       brush=pg.mkBrush(192, 50, 33, 255), hoverable=True)
+
         self.points_T3_auto = pg.ScatterPlotItem(self.examination.artifacts["T3_auto"], 
                                        self.examination.RR[self.examination.artifacts["T3_auto"]],
-                                       brush=pg.mkBrush(255, 0, 128, 255), hoverable=True)
+                                       brush=pg.mkBrush(157, 68, 181, 255), hoverable=True)
 
-        self.points_T1_manual = pg.ScatterPlotItem(self.examination.artifacts["T1_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T1_manual"]],
-                                       brush=pg.mkBrush(255, 127, 80, 255), hoverable=True)
-        self.points_T2_manual = pg.ScatterPlotItem(self.examination.artifacts["T2_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T2_manual"]],
-                                       brush=pg.mkBrush(0, 255, 255, 255), hoverable=True)
-        self.points_T3_manual = pg.ScatterPlotItem(self.examination.artifacts["T3_manual"], 
-                                       self.examination.RR[self.examination.artifacts["T3_manual"]],
-                                       brush=pg.mkBrush(102, 0, 204, 255), hoverable=True)
-
-        self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["other_manual"], 
-                                       self.examination.RR[self.examination.artifacts["other_manual"]],
-                                       brush=pg.mkBrush(153, 0, 76, 255), hoverable=True)
+        self.points_diff = pg.ScatterPlotItem(self.examination.artifacts["Manual"], 
+                                       self.examination.RR[self.examination.artifacts["Manual"]],
+                                       brush=pg.mkBrush(68, 43, 72, 255), hoverable=True)
         
         """for points in [self.points_T1_auto, self.points_T2_auto, self.points_T3_auto,
                    self.points_T1_manual, self.points_T2_manual, self.points_T3_manual,
@@ -283,20 +282,22 @@ class Window(QWidget):
 
         # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
         self.p3.clear()
+        self.points_poin_art.clear()
         for el in [self.points_Tarvainen, self.points_T1_auto, self.points_T2_auto, 
-                   self.points_T3_auto, self.points_T1_manual, self.points_T2_manual, 
-                   self.points_T3_manual, self.points_diff]:
+                   self.points_T3_auto, self.points_diff, self.points_Poincare]:
             self.p3.addItem(el)
         
+        RRi1_list = np.array([x + 1 for x in self.examination.artifacts["Quotient"]])
+        self.points_poin_art.setData(self.examination.RR[self.examination.artifacts["Quotient"]], 
+                                    self.examination.RR[RRi1_list]) 
+        self.plot_poincare.addItem(self.points_poin_art)
 
         # ustawienia legendy 
-        """self.legend.clear()
+        self.legend.clear()
+        self.legend.addItem(self.points_diff, 'Manual')
         self.legend.addItem(self.points_Tarvainen, 'Tarvainen')
-        self.legend.addItem(self.points_T1_auto, 'auto T1')
-        self.legend.addItem(self.points_T2_auto, 'auto T2')
-        self.legend.addItem(self.points_T3_auto, 'auto T3')
-        self.legend.addItem(self.points_T1_manual, 'manual T1')
-        self.legend.addItem(self.points_T2_manual, 'manual T2')
-        self.legend.addItem(self.points_T3_manual, 'manual T3')
-        self.legend.addItem(self.points_diff, 'other')
-        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))"""
+        self.legend.addItem(self.points_poin_art, 'Quotient')
+        self.legend.addItem(self.points_T1_auto, 'T1')
+        self.legend.addItem(self.points_T2_auto, 'T2')
+        self.legend.addItem(self.points_T3_auto, 'T3')
+        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))

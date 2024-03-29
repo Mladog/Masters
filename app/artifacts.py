@@ -180,6 +180,22 @@ def find_art3(obj):
     final = [x for x in idx if x not in art1]
     return final
 
+def find_art_quotient(obj):
+    """
+    function to find artifacts with a use of Piskorski-Guzik filter
+    """
+    x = obj.examination.RR
+    L = len(x) - 1
+    condition1 = x[:L] / x[1:] <= 0.8
+    condition2 = x[:L] / x[:L] > 1.2
+    condition3 = x[1:] / x[:L] < 0.8
+    condition4 = x[1:] / x[:L] > 1.2
+
+    indices_p = np.where(condition1 | condition2 | condition3 | condition4)[0]
+    indices_m = indices_p
+
+    return indices_m.tolist()
+
 def remove_artifacts(obj):
     '''
     function to change chosen artifacts
