@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QPushButton, QButtonGroup, QRadioButton, QLabel, QLineEdit
 
 def initialize_hrv_options(obj):
-    obj.param_hrv_label = QLabel("Set boundries for algorithms:")
+    obj.param_hrv_label = QLabel("Set active signal length:")
     obj.h1 = QRadioButton("Full examination", obj)
-    obj.h2 = QRadioButton("Selected section", obj)
+    obj.h2 = QRadioButton("Selected length", obj)
 
     obj.hrv_group = QButtonGroup(obj)
     obj.hrv_group.addButton(obj.h1)

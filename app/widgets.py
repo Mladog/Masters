@@ -19,23 +19,29 @@ def create_widgets(obj) -> None:
 
     # utworzenie etykiety z wyśrodkowanym tekstem
     # oraz dodanie jej do głównego układu
-    obj.label = QLabel("Load file with extensions .txt, .csv or xls:")
-    obj.first_row.addWidget(obj.label, alignment=Qt.AlignmentFlag.AlignRight)
+    #obj.label = QLabel("Load file with extensions .txt, .csv or xls:")
+    #obj.first_row.addWidget(obj.label, alignment=Qt.AlignmentFlag.AlignRight)
     obj.main_layout.addLayout(obj.first_row)
 
     # utworzenie przycisku odpowiedzialnego za możliwość 
     # wczytania nowego pliku
     obj.file_btn = QPushButton(obj)
     obj.file_btn.resize(100, 50)
-    obj.file_btn.setText("Load file")
+    obj.file_btn.setText("Load file (.txt, .csv or .xls)")
     obj.first_row.addWidget(obj.file_btn)
     obj.file_btn.clicked.connect(obj.open_dialog)
 
+    # Layout: identify artifact
+    obj.identification_layout = QHBoxLayout()
+    obj.identification_label = QLabel("Options for artifacts identification:")
+    obj.identification_label.setStyleSheet('color: red')
+    obj.identification_layout.addWidget(obj.identification_label)
+
     # utworzenie opcji do wpisania ręcznego
     obj.textbox_layout = QHBoxLayout()
-    obj.label_art1 = QLabel("T1: Difference in one section [ms]")
-    obj.label_art2 = QLabel("T2: Long interval before short one [ms]")
-    obj.label_art3 = QLabel("T3: Short interval before long one [ms]")
+    obj.label_art1 = QLabel("T1: Difference between two neighboring RRi [ms]")
+    obj.label_art2 = QLabel("T2: Long RRi before short one [ms]")
+    obj.label_art3 = QLabel("T3: Short RRi before long one [ms]")
     obj.textbox_art1 = QLineEdit(obj)
     obj.textbox_art1.setText("200")
     obj.textbox_art2 = QLineEdit(obj)
@@ -47,11 +53,12 @@ def create_widgets(obj) -> None:
                obj.label_art3, obj.textbox_art3]:
         obj.textbox_layout.addWidget(el)
   
-    
     # dodanie układu hrv
     obj.main_layout.addLayout(obj.hrv_options_layout_1)
-    obj.main_layout.addLayout(obj.textbox_layout)
     obj.main_layout.addLayout(obj.hrv_options_layout_2)
+
+    obj.main_layout.addLayout(obj.identification_layout)
+    obj.main_layout.addLayout(obj.textbox_layout)
     initialize_hrv_options(obj)
 
     # artifacts detedction layout
@@ -75,21 +82,38 @@ def create_widgets(obj) -> None:
     obj.tarv_art.clicked.connect(lambda:obj.auto_poincare())
     obj.a_buttons_layout.addWidget(obj.tarv_art)
 
+    obj.art_btn = QPushButton(obj)
+    obj.art_btn.setText("Mark manually")
+    obj.art_btn.clicked.connect(lambda:obj.choose_artifact())
+    obj.a_buttons_layout.addWidget(obj.art_btn)       
+    
+    obj.del_btn = QPushButton(obj)
+    obj.del_btn.setText("Delete single selection")
+    obj.del_btn.clicked.connect(lambda:obj.del_artifact([obj.coords_x]))
+    obj.a_buttons_layout.addWidget(obj.del_btn)    
+
     # Button that allows for clearing detections
     obj.clear_art = QPushButton(obj)
-    obj.clear_art.setText("Clear detections")
+    obj.clear_art.setText("Clear all detections")
     obj.clear_art.clicked.connect(lambda:obj.clear_artifacts())
     obj.a_buttons_layout.addWidget(obj.clear_art)
 
     obj.label_marks_correction = QLabel("Modify artifacts manually: ")
 
     # dodanie układu przycisków zaznaczeń
-    obj.main_layout.addLayout(obj.r_buttons_layout)
-    obj.r_buttons_layout.addWidget(obj.label_marks_correction, alignment=Qt.AlignmentFlag.AlignRight)
+    #obj.main_layout.addLayout(obj.r_buttons_layout)
+    #obj.r_buttons_layout.addWidget(obj.label_marks_correction, alignment=Qt.AlignmentFlag.AlignRight)
 
     # dodanie układu RR
     create_RR_layout(obj)
     obj.main_layout.addLayout(obj.RR_layout)
+
+    # sections titles
+    obj.correction_layout = QHBoxLayout()
+    obj.correction_label = QLabel("Options for artifacts correction:")
+    obj.correction_label.setStyleSheet('color: red')
+    obj.correction_layout.addWidget(obj.correction_label)
+    obj.main_layout.addLayout(obj.correction_layout)
 
     # dodanie układu przycisków korekcji
     obj.main_layout.addLayout(obj.c_buttons_layout)

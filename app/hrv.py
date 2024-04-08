@@ -47,31 +47,28 @@ def create_hrv_summary(hrv_params):
     if hrv_params["stationarity"] <= 0.05:
         stationarity_text = f"signal is stational (p-value {round(hrv_params['stationarity'], 3)} for adfuller test)"
     else:
-        stationarity_text = f"Warning, signal is not stational \n(p-value for adfuller test: {round(hrv_params['stationarity'], 3)})\n"
+        stationarity_text = f"WARNING! Non-stationary signal  \n(p-value for adfuller test: {round(hrv_params['stationarity'], 3)})\n"
     #stationarity_text = ""
     hrv_time = hrv_params["hrv_time"]
     hrv_freq = hrv_params["hrv_freq"]
     hrv_nonlinear = hrv_params["hrv_nonlinear"]
     text = f"""{stationarity_text}
-HRV in time domain:
-mean: {np.round(hrv_time['mean'], 3)}
-SDNN: {np.round(hrv_time['sdnn'], 3)}
-RMSSD: {np.round(hrv_time['rmssd'], 3)}
-pnnx: {np.round(hrv_time['pnnx'], 3)}
-triang: {np.round(hrv_time['triang'], 3)}
-TINN: {np.round(hrv_time['tinn'], 3)}
+Time-domain HRV parameters:
+Mean RRi [ms]: {np.round(hrv_time['mean'], 3)}
+SDNN [ms]: {np.round(hrv_time['sdnn'], 3)}
+RMSSD [ms]: {np.round(hrv_time['rmssd'], 3)}
+pNN50 [%] : {np.round(hrv_time['pnnx'], 3)}
 
-HRV in frequency domain:
-hf: {np.round(hrv_freq['HFabs'],5)}
-lf: {np.round(hrv_freq['LFabs'],5)}
-lf nu: {np.round(hrv_freq['LFnu'],5)}
-hf nu: {np.round(hrv_freq['HFnu'],5)}
-vlf: {np.round(hrv_freq['VLFabs'],5)}
-lf/hf: {np.round(hrv_freq['LFHF'],5)}
+Frequency-domain HRV parameters:
+LF [ms2]: {np.round(hrv_freq['LFabs'],5)}
+HF [ms2]: {np.round(hrv_freq['HFabs'],5)}
+LF [nu]: {np.round(hrv_freq['LFnu'],5)}
+HF [nu]: {np.round(hrv_freq['HFnu'],5)}
+LF/HF: {np.round(hrv_freq['LFHF'],5)}
 
-HRV nonlinear:
-SD1: {np.round(hrv_nonlinear['sd1'], 3)}
-SD2: {np.round(hrv_nonlinear['sd2'], 3)}
+HPoincare descriptors:
+SD1 [ms]: {np.round(hrv_nonlinear['sd1'], 3)}
+SD2 [ms]: {np.round(hrv_nonlinear['sd2'], 3)}
         """
     return text
 
