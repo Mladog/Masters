@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (QCheckBox, QHBoxLayout, QLabel, QLineEdit,
 from buttons_layout import create_buttons_layout
 from RR_layout import create_RR_layout
 from hrv_options import initialize_hrv_options
+from communicats import create_communicas
 
 
 def create_widgets(obj) -> None:
@@ -77,10 +78,10 @@ def create_widgets(obj) -> None:
     obj.a_buttons_layout.addWidget(obj.poin_art)
 
     # Button that allows for auto Tarvainen detection
-    obj.tarv_art = QPushButton(obj)
-    obj.tarv_art.setText("Quotient filtering auto-finding")
-    obj.tarv_art.clicked.connect(lambda:obj.auto_poincare())
-    obj.a_buttons_layout.addWidget(obj.tarv_art)
+    obj.quot_art = QPushButton(obj)
+    obj.quot_art.setText("Quotient filtering auto-finding")
+    obj.quot_art.clicked.connect(lambda:obj.auto_poincare())
+    obj.a_buttons_layout.addWidget(obj.quot_art)
 
     obj.art_btn = QPushButton(obj)
     obj.art_btn.setText("Mark manually")
@@ -142,3 +143,4 @@ def create_widgets(obj) -> None:
     
     # utworzenie układów
     create_buttons_layout(obj)
+    create_communicas(obj)
