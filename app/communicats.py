@@ -11,11 +11,13 @@ def create_communicas(obj):
 
     # Methods of identification
     # T1-T3
-    obj.auto_art.setToolTip("...")
+    obj.auto_art.setToolTip("""T1: identified as a difference too big between two intervals correspoding with a sample.
+T2: identified as an interval too short taking into consideration previous sample.
+T2: identified as an interval too short taking into consideration previous sample.""")
     # Tarvainen
-    obj.poin_art.setToolTip("...")
+    obj.poin_art.setToolTip("The Tarvainen method of RR artifact correction involves applying a frequency-domain adaptive filter to the RR interval series")
     # Quotient
-    obj.quot_art.setToolTip("....")
+    obj.quot_art.setToolTip("Quotien filtering proposed by Piskorski and Guzik. It is recommendet to use this method twice.")
     # Manual
     obj.art_btn.setToolTip("Selected sample of RR Signal will be identified as an artifact.")
     # Delete single
@@ -25,12 +27,12 @@ def create_communicas(obj):
 
     # Methods of correction
     # linear interpolation
-    obj.m1.setToolTip("...")
+    obj.m1.setToolTip("Correction with linear interpolation.")
     # cubic splain
-    obj.m2.setToolTip("...")
+    obj.m2.setToolTip("Correction with cubic slain.")
     # deletion
-    obj.m3.setToolTip("...")
+    obj.m3.setToolTip("Deleting corrupted samples from examination. Recommended if artifacts occurs in the first or last sample.")
     # moving average
-    obj.m4.setToolTip("...")
+    obj.m4.setToolTip("Correction with a moving average algorithm with a window of length 7.")
     # pre mean
-    obj.m5.setToolTip("...")
+    obj.m5.setToolTip("Correction by replacing the artifact with a mean of few last samples defined by user.")

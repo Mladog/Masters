@@ -24,8 +24,6 @@ class Window(QWidget):
         # dostosowanie wielkości okna
         self.resize(700, 500)
         self.setStyleSheet("QLabel{font-size: 8pt;}")
-        #self.setStyleSheet("QRadioButton{font-size: 7pt;}")
-        #self.setStyleSheet("QCheckBox{font-size: 7pt;}")
         
         # tytuł aplikacji
         self.setWindowTitle("Application to correct artifacts in RR intervals")
@@ -289,7 +287,7 @@ class Window(QWidget):
         
         RRi1_list = np.array([x + 1 for x in self.examination.artifacts["Quotient"]])
         self.points_poin_art.setData(self.examination.RR[self.examination.artifacts["Quotient"]], 
-                                    self.examination.RR[RRi1_list]) 
+                                    self.examination.RR[RRi1_list.tolist()]) 
         self.plot_poincare.addItem(self.points_poin_art)
 
         # ustawienia legendy 
