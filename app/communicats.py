@@ -11,13 +11,13 @@ def create_communicas(obj):
 
     # Methods of identification
     # T1-T3
-    obj.auto_art.setToolTip("""T1: identified as a difference too big between two intervals correspoding with a sample.
+    obj.auto_art.setToolTip("""T1: identified as a difference too big between two intervals corresponding with a sample.
 T2: identified as an interval too short taking into consideration previous sample.
 T2: identified as an interval too short taking into consideration previous sample.""")
     # Tarvainen
-    obj.poin_art.setToolTip("The Tarvainen method of RR artifact correction involves applying a frequency-domain adaptive filter to the RR interval series")
+    obj.poin_art.setToolTip("The Tarvainen method of RR artifact correction involves applying a frequency-domain adaptive filter to the RR interval series.")
     # Quotient
-    obj.quot_art.setToolTip("Quotien filtering proposed by Piskorski and Guzik. It is recommendet to use this method twice.")
+    obj.quot_art.setToolTip("Quotient filtering proposed by Piskorski and Guzik. It is recommended to use this method twice.")
     # Manual
     obj.art_btn.setToolTip("Selected sample of RR Signal will be identified as an artifact.")
     # Delete single

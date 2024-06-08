@@ -135,9 +135,9 @@ def create_widgets(obj) -> None:
     # utworzenie przycisków do usuwania grup artefaktów
     obj.Tarvainen = QCheckBox("Tarvainen")
     obj.quotient = QCheckBox("Quotient")
-    obj.t1_auto = QCheckBox("T1_auto")
-    obj.t2_auto = QCheckBox("T2_auto")
-    obj.t3_auto = QCheckBox("T3_auto")
+    obj.t1_auto = QCheckBox("T1")
+    obj.t2_auto = QCheckBox("T2")
+    obj.t3_auto = QCheckBox("T3")
     obj.diff_man = QCheckBox("Manual")
     obj.checkbox_list = [obj.Tarvainen, obj.quotient, obj.t1_auto, obj.t2_auto, obj.t3_auto, obj.diff_man]
     

@@ -25,9 +25,9 @@ class Examination():
             # zainicjowanie słownika artefaktów
             self.artifacts = {"Tarvainen": [],
                             "Quotient": [],
-                            "T1_auto": [],
-                            "T2_auto": [],
-                            "T3_auto": [],
+                            "T1": [],
+                            "T2": [],
+                            "T3": [],
                             "Manual": []}
         
     def get_RR_intervals(self):
