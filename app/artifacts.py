@@ -241,7 +241,7 @@ def remove_artifacts(obj):
                     interval.value = f(i)
                     interval.correction_methods[method] += 1
 
-        # korekcja metoda splejnu kubicznego
+        # korekcja metoda splajnu kubicznego
         elif method == "cubic splain":
             f = sp.interpolate.CubicSpline(inds[values], RR_with_nan[values])
             for i, interval in enumerate(obj.examination.RR_intervals):

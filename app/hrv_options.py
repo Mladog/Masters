@@ -25,6 +25,6 @@ def initialize_hrv_options(obj):
     for h in [obj.param_hrv_label, obj.h1, obj.h2, obj.recount]:
         obj.hrv_options_layout_1.addWidget(h)
     
-    for h in [obj.start_label, obj.textbox_start, obj.end_label,obj.textbox_end]:
+    for h in [obj.start_label, obj.textbox_start, obj.end_label, obj.textbox_end]:
         obj.hrv_options_layout_2.addWidget(h)
 

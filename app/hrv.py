@@ -43,7 +43,7 @@ def count_hrv(obj):
                 }
     return hrv_params
 
-def create_hrv_summary(hrv_params):
+def create_hrv_summary(hrv_params, show_all = False):
     if hrv_params["stationarity"] <= 0.05:
         stationarity_text = f"signal is stational (p-value {round(hrv_params['stationarity'], 3)} for adfuller test)"
     else:
@@ -52,7 +52,8 @@ def create_hrv_summary(hrv_params):
     hrv_time = hrv_params["hrv_time"]
     hrv_freq = hrv_params["hrv_freq"]
     hrv_nonlinear = hrv_params["hrv_nonlinear"]
-    text = f"""{stationarity_text}
+    if show_all:
+        text = f"""{stationarity_text}
 Time-domain HRV parameters:
 Mean RRi [ms]: {np.round(hrv_time['mean'], 3)}
 SDNN [ms]: {np.round(hrv_time['sdnn'], 3)}
@@ -70,6 +71,8 @@ HPoincare descriptors:
 SD1 [ms]: {np.round(hrv_nonlinear['sd1'], 3)}
 SD2 [ms]: {np.round(hrv_nonlinear['sd2'], 3)}
         """
+    else:
+        text = f"{stationarity_text}"
     return text
 
     results["VLFabs"] = np.median(vlfabs)
@@ -78,6 +81,7 @@ SD2 [ms]: {np.round(hrv_nonlinear['sd2'], 3)}
     results["LFnu"] = np.median(lfnu)
     results["HFnu"] = np.median(hfnu)
     results["LFHF"] = np.median(lfhf)
+
 
 def count_freq_domain(RR):
     """
