@@ -14,7 +14,7 @@ def create_RR_layout(obj):
     obj.RR_layout.addWidget(obj.graphWidget)
 
     # etykieta zawierająca informacje o sygnale
-    obj.hrv_label = QLabel("Waiting for \nsignal")
-    obj.hrv_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    obj.RR_layout.addWidget(obj.hrv_label)
+    obj.hrv_label = QLabel("Waiting for signal")
+    #obj.hrv_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    #obj.RR_layout.addWidget(obj.hrv_label) to uncomment if HRV back
     obj.RR_layout.addWidget(obj.poincareWidget)

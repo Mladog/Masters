@@ -62,7 +62,7 @@ class Window(QWidget):
             self.update_plot()
             # wpisanie numerów pierwszego i ostatniego interwału do textboxów 
             self.textbox_start.setText("0")
-            self.textbox_end.setText(f"{str(len(self.examination.RR)-1)}")
+            self.textbox_end.setText(f"{str(len(self.examination.RR_intervals)-1)}")
 
     def mouse_moved(self, evt):
         """
@@ -81,8 +81,8 @@ class Window(QWidget):
         scene_coords = evt.scenePos()
         if self.graphWidget.sceneBoundingRect().contains(scene_coords):
             mouse_point = vb.mapSceneToView(scene_coords)
-            diff_y = np.abs(self.examination.RR - mouse_point.y())
-            diff_x = np.abs(np.array(range(len(self.examination.RR))) - mouse_point.x())
+            diff_y = np.abs(np.array([interval.value for interval in self.examination.RR_intervals]) - mouse_point.y())
+            diff_x = np.abs(np.array(range(len(self.examination.RR_intervals))) - mouse_point.x())
             idx = (np.abs(diff_x + diff_y)).argmin()
             self.coords_x = idx
             add_point_to_graph(self)
@@ -155,7 +155,7 @@ class Window(QWidget):
         funkcja znajdujaca artefakty automatycznie i wykreslajaca je na wykresie
         """
         # warunek wczytania badania
-        if len(self.examination.RR) > 0:
+        if len(self.examination.RR_intervals) > 0:
             self.examination.artifacts["T1"] = find_art1(self)
             self.examination.artifacts["T2"] = find_art2(self)
             self.examination.artifacts["T3"] = find_art3(self)
@@ -163,17 +163,17 @@ class Window(QWidget):
             self.plot_artifacts()
 
     def auto_tarvainen(self):
-        if len(self.examination.RR) > 0:
+        if len(self.examination.RR_intervals) > 0:
             self.examination.artifacts["Tarvainen"] = find_art_tarvainen(self)
             self.plot_artifacts()
 
     def auto_poincare(self):
-        if len(self.examination.RR) > 0:
+        if len(self.examination.RR_intervals) > 0:
             self.examination.artifacts["Quotient"] = find_art_quotient(self)
             self.plot_artifacts()
     
     def clear_artifacts(self):
-        if len(self.examination.RR) > 0:
+        if len(self.examination.RR_intervals) > 0:
             for key in (self.examination.artifacts.keys()):
                 self.examination.artifacts[key] = []
             self.plot_artifacts()
@@ -235,19 +235,21 @@ class Window(QWidget):
         for p in [self.plot_art, self.p3, self.plot_cursor, self.legend, self.plot_poincare]:
             p.clear()
         
-        self.plot_label.setXRange(-100, len(self.examination.RR)+150, padding=0)
-        self.plot_label.setYRange(-100, max(self.examination.RR)+150, padding=0)
-        self.RRs = pg.PlotCurveItem(self.examination.RR, pen='b')
+        self.plot_label.setXRange(-100, len(self.examination.RR_intervals)+150, padding=0)
+        self.plot_label.setYRange(-100, max(self.examination.RR_intervals, key=lambda interval: interval.value).value+150, padding=0)
+        self.RRs = pg.PlotCurveItem([interval.value for interval in self.examination.RR_intervals], pen='b')
         self.plot_art.addItem(self.RRs)
         self.update_hrv_params() 
 
         # Set x and y limits for the Poincaré plot
-        xy_min = min(self.examination.RR) - 5
-        xy_max = max(self.examination.RR) + 5
+        xy_min = min(self.examination.RR_intervals, key=lambda interval: interval.value).value - 5
+        xy_max = max(self.examination.RR_intervals, key=lambda interval: interval.value).value + 5
         self.plot_poincare.setXRange(xy_min, xy_max)
         self.plot_poincare.setYRange(xy_min, xy_max)
         
-        self.points_poincare.setData(self.examination.RR[:-1], self.examination.RR[1:]) 
+        x_values = [interval.value for interval in self.examination.RR_intervals[:-1]]
+        y_values = [interval.value for interval in self.examination.RR_intervals[1:]]
+        self.points_poincare.setData(x_values, y_values) 
         self.plot_poincare.addItem(self.points_poincare)
         self.plot_poincare.addItem(self.points_poin_art)
         
@@ -286,14 +288,14 @@ class Window(QWidget):
         # adding new scatterpoints
         for key in self.scatter_points.keys():
             self.scatter_points[key] = pg.ScatterPlotItem(self.examination.artifacts[key], 
-                                       self.examination.RR[self.examination.artifacts[key]],            
+                                       list(map(lambda idx: self.examination.RR_intervals[idx].value, self.examination.artifacts[key])),            
                                        brush=self.brush_colors[key], hoverable=True)
             self.p3.addItem(self.scatter_points[key])
 
             RRi1_list = np.array([x + 1 for x in self.examination.artifacts[key]])
             if len(RRi1_list) > 0:
-                self.scatter_poincare[key] = pg.ScatterPlotItem(self.examination.RR[self.examination.artifacts[key]], 
-                                                                self.examination.RR[RRi1_list.tolist()],
+                self.scatter_poincare[key] = pg.ScatterPlotItem(list(map(lambda idx: self.examination.RR_intervals[idx].value, self.examination.artifacts[key])), 
+                                                                list(map(lambda idx: self.examination.RR_intervals[idx].value, RRi1_list.tolist())),
                                                                 brush=self.brush_colors[key],
                                                                 hoverable=True)
             #self.scatter_poincare[key].setData() 
@@ -310,4 +312,4 @@ class Window(QWidget):
         self.legend.clear()
         for key in self.scatter_points.keys():
             self.legend.addItem(self.scatter_points[key], key)
-        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR))))
+        self.legend.setPos(self.legend.mapFromItem(self.legend, QtCore.QPointF(0, max(self.examination.RR_intervals, key=lambda interval: interval.value).value)))

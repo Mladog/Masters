@@ -29,7 +29,7 @@ def find_art_tarvainen(obj,
 
         return th
 
-    rr = list(map(lambda x: x, obj.examination.RR))
+    rr = list(map(lambda x: x.value, obj.examination.RR_intervals))
     #rr = list(map(int, rr))
     drrs = np.ediff1d(rr, to_begin=0)
     drrs[0] = np.mean(drrs[1:])
@@ -184,7 +184,7 @@ def find_art_quotient(obj):
     """
     function to find artifacts with a use of Piskorski-Guzik filter
     """
-    x = obj.examination.RR
+    x = [interval.value for interval in self.examination.RR]
     L = len(x) - 1
     condition1 = x[:L] / x[1:] <= 0.8
     condition2 = x[:L] / x[:L] > 1.2
@@ -328,13 +328,13 @@ def remove_artifacts(obj):
                 if len(obj.examination.RR_intervals) in obj.examination.artifacts[key]:
                     obj.examination.artifacts[key].remove(len(obj.examination.RR_intervals))
 
-        obj.examination.RR = np.array([int(element.value) for element in obj.examination.RR_intervals])
+        #obj.examination.RR = np.array([int(element.value) for element in obj.examination.RR_intervals])
         for key in obj.examination.artifacts.keys():
             for i in idx:
                 if i in obj.examination.artifacts[key]:
                     obj.examination.artifacts[key].remove(i)
         
-        obj.examination.RR  = np.array([int(interval.value) for interval in obj.examination.RR_intervals])
+        #obj.examination.RR  = np.array([int(interval.value) for interval in obj.examination.RR_intervals])
         return deleted
     else:
         return np.array([])

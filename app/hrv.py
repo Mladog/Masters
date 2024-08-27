@@ -15,7 +15,7 @@ def count_hrv(obj):
     
     if obj.h1.isChecked() == True:
         obj.exam_start=0
-        obj.exam_stop=len(obj.examination.RR)-1
+        obj.exam_stop=len(obj.examination.RR_intervals)-1
         obj.hrv_range.clear()
     else:
         try:
@@ -26,20 +26,22 @@ def count_hrv(obj):
         try:
             obj.exam_stop=int(obj.textbox_end.text())
             if obj.exam_stop <= obj.exam_start:
-                obj.exam_stop = str(len(obj.examination.RR)-1)
-                obj.textbox_end.setText(str(len(obj.examination.RR)-1))
+                obj.exam_stop = str(len(obj.examination.RR_intervals)-1)
+                obj.textbox_end.setText(str(len(obj.examination.RR_intervals)-1))
         except:
-            obj.exam_stop=len(obj.examination.RR)-1
-            obj.textbox_end.setText(str(len(obj.examination.RR)-1))
+            obj.exam_stop=len(obj.examination.RR_intervals)-1
+            obj.textbox_end.setText(str(len(obj.examination.RR_intervals)-1))
         # narysowanie granic przedziału
         obj.hrv_range.clear()
         obj.hrv_range.addItem(pg.InfiniteLine(obj.exam_start, pen='r'))
         obj.hrv_range.addItem(pg.InfiniteLine(obj.exam_stop, pen='r'))
-    stationarity_result = adfuller(obj.examination.RR[obj.exam_start:obj.exam_stop])[1]
+    subset_values = [interval.value for interval in obj.examination.RR_intervals[obj.exam_start:obj.exam_stop]]
+    stationarity_result = adfuller(subset_values[obj.exam_start:obj.exam_stop])[1]
+    
     hrv_params = {"stationarity": stationarity_result,
-                  "hrv_time": count_time_domain(obj.examination.RR[obj.exam_start:obj.exam_stop]),
-                  "hrv_nonlinear": count_nonlinear(obj.examination.RR[obj.exam_start:obj.exam_stop]),
-                  "hrv_freq": count_freq_domain(obj.examination.RR[obj.exam_start:obj.exam_stop])
+                  "hrv_time": count_time_domain(subset_values[obj.exam_start:obj.exam_stop]),
+                  "hrv_nonlinear": count_nonlinear(subset_values[obj.exam_start:obj.exam_stop]),
+                  "hrv_freq": count_freq_domain(subset_values[obj.exam_start:obj.exam_stop])
                 }
     return hrv_params
 
@@ -47,7 +49,7 @@ def create_hrv_summary(hrv_params, show_all = False):
     if hrv_params["stationarity"] <= 0.05:
         stationarity_text = f"signal is stational (p-value {round(hrv_params['stationarity'], 3)} for adfuller test)"
     else:
-        stationarity_text = f"WARNING! Non-stationary signal  \n(p-value for adfuller test: {round(hrv_params['stationarity'], 3)})\n"
+        stationarity_text = f"WARNING! Non-stationary signal (p-value for adfuller test: {round(hrv_params['stationarity'], 3)})\n"
     #stationarity_text = ""
     hrv_time = hrv_params["hrv_time"]
     hrv_freq = hrv_params["hrv_freq"]
@@ -142,7 +144,7 @@ def count_time_domain(RR, x=50, binWidth=7.8125):
     parametry liczone w dziedzinie czestotliwosci
     """
     result = dict()
-    diffSeg = RR[1::1] - RR[0:-1:1]
+    diffSeg = np.array(RR[1::1]) - np.array(RR[0:-1:1])
     result["mean"] = np.mean(RR)
     result["sdnn"] = np.std(RR)
     result["rmssd"] = np.sqrt(np.mean(diffSeg * diffSeg))

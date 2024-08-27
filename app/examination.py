@@ -11,7 +11,7 @@ class Examination():
     def __init__(self, path=None):
         self.path = path
         if self.path == None:
-            self.RR = []
+            #self.RR = []
             self.t = []
             self.duration = 0
             self.extension = ''
@@ -19,8 +19,8 @@ class Examination():
 
         else:
             self.extension = self.path.split('.')[-1]
-            self.RR = self.get_RR_intervals()
-            self.RR_intervals = [Interval(int(RR)) for RR in self.RR]
+            #self.RR = self.get_RR_intervals()
+            self.RR_intervals = [Interval(int(RR)) for RR in self.get_RR_intervals()]
             self.original_len = len(self.RR_intervals)
             # zainicjowanie słownika artefaktów
             self.artifacts = {"Tarvainen": [],

@@ -58,7 +58,8 @@ def create_new_graph(obj):
 
 def add_point_to_graph(obj):
     obj.plot_cursor.clear()
-    obj.cursor_coords = pg.ScatterPlotItem([obj.coords_x], [obj.examination.RR[obj.coords_x]],
+    RR_values = np.array([interval.value for interval in obj.examination.RR_intervals])
+    obj.cursor_coords = pg.ScatterPlotItem([obj.coords_x], [RR_values[obj.coords_x]],
                                        brush=pg.mkBrush(0, 255, 0, 120),
                                        size = 12,
                                        hoverable=True)

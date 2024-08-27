@@ -108,6 +108,7 @@ def create_widgets(obj) -> None:
     # dodanie układu RR
     create_RR_layout(obj)
     obj.main_layout.addLayout(obj.RR_layout)
+    obj.main_layout.addWidget(obj.hrv_label)
 
     # sections titles
     obj.correction_layout = QHBoxLayout()
