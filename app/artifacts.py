@@ -148,6 +148,10 @@ def find_art1(obj):
     d_next.insert(-1, 0)
 
     final_list = [sum(value) for value in zip(d_prev, d_next)]
+    #check for last interval
+    if abs(obj.examination.RR_intervals[-1].value - obj.examination.RR_intervals[-2].value) > diff:
+        final_list[-1] = 2
+    
     idx = np.where(np.array(final_list) == 2)[0]
 
     return idx.tolist()
@@ -160,6 +164,9 @@ def find_art2(obj):
     # obliczone różnice między obecnym i następnym interwałem
     d_next = [1 if (obj.examination.RR_intervals[i-1].value - obj.examination.RR_intervals[i].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_next.insert(-1, 0)
+    # check for last sample
+    if obj.examination.RR_intervals[-2].value - obj.examination.RR_intervals[-1].value > diff:
+        d_next[-1] = 1
 
     idx = np.where(np.array(d_next) == 1)[0]
     art1 = find_art1(obj)
@@ -174,7 +181,9 @@ def find_art3(obj):
     # obliczone różnice między obecnym i następnym interwałem
     d_next = [1 if (obj.examination.RR_intervals[i-1].value - obj.examination.RR_intervals[i].value) > diff else 0 for i in range(1, len(obj.examination.RR_intervals))]
     d_next.insert(-1, 0)
-
+    # check for last sample
+    if obj.examination.RR_intervals[-1].value - obj.examination.RR_intervals[-2].value > diff:
+        d_next[-1] = 1
     idx = np.where(np.array(d_next) == 1)[0]
     art1 = find_art1(obj)
     final = [x for x in idx if x not in art1]
@@ -184,7 +193,7 @@ def find_art_quotient(obj):
     """
     function to find artifacts with a use of Piskorski-Guzik filter
     """
-    x = [interval.value for interval in self.examination.RR]
+    x = np.array([interval.value for interval in obj.examination.RR_intervals])
     L = len(x) - 1
     condition1 = x[:L] / x[1:] <= 0.8
     condition2 = x[:L] / x[:L] > 1.2
@@ -252,7 +261,15 @@ def remove_artifacts(obj):
                     interval.correction_methods[method] += 1
         
         elif method == "deletion":
-            obj.examination.RR_intervals = list(filter(lambda interval: not np.isnan(interval.value), obj.examination.RR_intervals))
+            nan_indices = [i for i, interval in enumerate(obj.examination.RR_intervals) if np.isnan(interval.value)]
+            #obj.examination.RR_intervals = list(filter(lambda interval: not np.isnan(interval.value), obj.examination.RR_intervals))
+            nan_indices = sorted(set(nan_indices), reverse=True)
+            for nan_idx in nan_indices:
+                for key in obj.examination.artifacts.keys():
+                    if nan_idx in obj.examination.artifacts[key]:
+                        obj.examination.artifacts[key].remove(nan_idx)
+                        obj.examination.RR_intervals.pop(nan_idx)
+                    obj.examination.artifacts[key] = [x - 1 if x > nan_idx else x for x in obj.examination.artifacts[key]]
                                                                                                                                                  
         # korekcja metoda sredniej kroczacej
         elif method == "moving average":

@@ -116,7 +116,7 @@ class Window(QWidget):
 
     def save_data(self):
         """
-        funkcja odpowiedzialna za zapis danych
+        function o save data in .txt format
         """
         dialog = QFileDialog()
         file_name = f"{self.examination.path[:-4]}_clean" if self.h1.isChecked() == True else f"{self.examination.path[:-4]}_short_clean"
@@ -159,7 +159,6 @@ class Window(QWidget):
             self.examination.artifacts["T1"] = find_art1(self)
             self.examination.artifacts["T2"] = find_art2(self)
             self.examination.artifacts["T3"] = find_art3(self)
-            #self.examination.artifacts["Poincare"] = find_art_quotient(self)
             self.plot_artifacts()
 
     def auto_tarvainen(self):
@@ -177,7 +176,6 @@ class Window(QWidget):
             for key in (self.examination.artifacts.keys()):
                 self.examination.artifacts[key] = []
             self.plot_artifacts()
-            #self.p3.clear()
 
             
     def delete_chosen_artifacts(self):
@@ -280,22 +278,24 @@ class Window(QWidget):
                                 'T3': pg.ScatterPlotItem(),
                                 'Manual': pg.ScatterPlotItem()}
 
-        # oczyszczenie wykresu z poprzednio wyznaczonych artefaktów
+        # clear previously found artifacts
         self.p3.clear()
         self.plot_poincare.clear()
         self.update_plot()
 
         # adding new scatterpoints
         for key in self.scatter_points.keys():
+            # add artifacts on examination plot
             self.scatter_points[key] = pg.ScatterPlotItem(self.examination.artifacts[key], 
                                        list(map(lambda idx: self.examination.RR_intervals[idx].value, self.examination.artifacts[key])),            
                                        brush=self.brush_colors[key], hoverable=True)
             self.p3.addItem(self.scatter_points[key])
 
-            RRi1_list = np.array([x + 1 for x in self.examination.artifacts[key]])
+            # add artifacts on pioncare plot
+            RRi1_list = np.array([x - 1 for x in self.examination.artifacts[key]])
             if len(RRi1_list) > 0:
-                self.scatter_poincare[key] = pg.ScatterPlotItem(list(map(lambda idx: self.examination.RR_intervals[idx].value, self.examination.artifacts[key])), 
-                                                                list(map(lambda idx: self.examination.RR_intervals[idx].value, RRi1_list.tolist())),
+                self.scatter_poincare[key] = pg.ScatterPlotItem(list(map(lambda idx: self.examination.RR_intervals[idx].value, RRi1_list.tolist())),
+                                                                list(map(lambda idx: self.examination.RR_intervals[idx].value, self.examination.artifacts[key])), 
                                                                 brush=self.brush_colors[key],
                                                                 hoverable=True)
             #self.scatter_poincare[key].setData() 
