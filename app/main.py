@@ -18,6 +18,6 @@ from window import Window
 import warnings
 warnings.filterwarnings("ignore")
 app = QApplication(sys.argv)
-window = Window()
+window = Window() 
 window.show()
 sys.exit(app.exec())

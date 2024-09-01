@@ -37,22 +37,23 @@ class Examination():
                 for line in file:
                     line = line.strip()
                     if all(char.isdigit() or char == '.' for char in line):
-                        intervals.append(int(float(line)))
+                        if len(line) > 0:
+                            intervals.append(int(float(line)))
                 list_int = np.array(intervals)
 
-        elif self.extension == 'xls':
+        elif self.extension in ['xls', 'xlsx'] :
             df = pd.read_excel(self.path, sheet_name=None)
 
             # Check if there are any worksheets in the Excel file
             if not df:
                 raise ValueError("No worksheets found in the Excel file.")
 
-            # Assuming the data is in the last column of the first sheet, you can modify accordingly
+            # Assuming the data is in the first column of the first sheet
             first_sheet_name = list(df.keys())[0]
-            last_column_name = df[first_sheet_name].columns[-1]
+            first_column_name = df[first_sheet_name].columns[0]
 
-            # Extract values from the last column of the first sheet
-            list_int = np.array(df[first_sheet_name][last_column_name].dropna().astype(float).tolist())
+            # Extract values from the first column of the first sheet
+            list_int = np.array(df[first_sheet_name][first_column_name].dropna().astype(float).tolist())
 
         elif self.extension == 'csv':
             df = pd.read_csv(self.path)
